@@ -343,6 +343,15 @@ details.faq[open] {
     opacity: 1;
     pointer-events: auto;
   }
+  .svc-card:hover img {
+    left: 21rem;
+    right: 0;
+    width: auto;
+    transform: none;
+  }
+  .svc-card img {
+    transition: left 0.55s cubic-bezier(0.4, 0, 0.2, 1), width 0.55s cubic-bezier(0.4, 0, 0.2, 1), transform 0.9s ease;
+  }
   .svc-short {
     display: flex;
     align-items: center;
