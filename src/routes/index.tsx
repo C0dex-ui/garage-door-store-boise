@@ -472,10 +472,6 @@ function Home() {
               <h2 className="mt-3 max-w-xl text-4xl md:text-5xl">Set prices from the Boise shop</h2>
               <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">Printed on garagedoorstoreboise.com. Tax and labor are included where noted. Call if the door is a different size.</p>
             </div>
-            <div className="flex flex-wrap gap-3">
-              <a href="tel:2085142871" className="btn bg-signal px-6 py-3 text-sm font-semibold text-white hover:bg-signal-hover">Call us now</a>
-              <a href="#quote" className="btn border border-ink/20 bg-paper px-6 py-3 text-sm font-semibold text-ink hover:bg-white">Get free estimate</a>
-            </div>
           </div>
         </div>
         <div className="mt-10">
