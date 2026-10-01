@@ -62,6 +62,7 @@ p,
 span {
   font-family: "Nunito", system-ui, sans-serif;
   font-size: 16px;
+  font-weight: 800;
   line-height: 1.6;
 }
 .ticket-price {
@@ -79,6 +80,15 @@ span {
   line-height: 0.95;
   color: #1c1f24;
   text-transform: uppercase;
+}
+.shop-kicker {
+  font-size: 1.05rem;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+}
+.shop-caption {
+  font-size: 1.35rem;
+  line-height: 1.35;
 }
 
 .btn {
@@ -769,7 +779,8 @@ details.faq[open] {
   animation: dash-move 0.7s linear infinite;
   pointer-events: none;
 }
-.slant.price-bg::after {
+.slant.price-bg::after,
+.about-band::after {
   background: repeating-linear-gradient(90deg, #1c1f24 0 26px, transparent 26px 42px);
 }
 @keyframes dash-move {

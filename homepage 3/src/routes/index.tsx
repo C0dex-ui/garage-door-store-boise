@@ -553,14 +553,20 @@ function Home() {
         </div>
       </section>
 
-      <section id="about" ref={aboutRef} className="slant-flip relative scroll-mt-24 overflow-hidden bg-white">
-        <img src="/images/sketches/torsion-spring.png" alt="" className="pointer-events-none absolute -bottom-16 -left-24 w-80 opacity-[0.12]" />
-        <img src="/images/sketches/roller.png" alt="" className="pointer-events-none absolute top-10 -right-16 w-64 opacity-[0.1]" />
-        <div className="relative mx-auto grid max-w-5xl items-center gap-12 px-5 py-16 lg:grid-cols-2 lg:py-16">
+      <section id="about" ref={aboutRef} className="slant-flip about-band relative scroll-mt-24 overflow-hidden bg-[#ed1c24] text-white">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage:
+              "radial-gradient(520px 280px at 0% 0%, rgba(255,255,255,0.16), transparent 70%), radial-gradient(640px 380px at 100% 100%, rgba(28,31,36,0.22), transparent 72%), repeating-linear-gradient(115deg, transparent 0 18px, rgba(255,255,255,0.08) 18px 19px)",
+          }}
+        />
+        <div className="relative z-10 mx-auto grid max-w-5xl items-center gap-12 px-5 py-16 lg:grid-cols-2 lg:items-stretch lg:py-16">
           <div className={`about-copy${aboutIn ? " is-in" : ""}`}>
-            <p className="flex items-center gap-3 text-xs font-bold tracking-[0.18em] text-[#ed1c24] uppercase before:h-px before:w-8 before:bg-[#ed1c24]">The shop and the crew</p>
-            <h2 className="mt-4 font-display text-5xl uppercase leading-[0.92] md:text-6xl">A family company.</h2>
-            <p className="mt-5 max-w-md leading-relaxed text-[#4b5563]">Garage Door Store Boise is a family owned and operated local business, providing garage door service for over 30 years. The shop is at 9075 W Hackamore Dr, Boise, ID 83709. A working door is part of the security and convenience of the house. The crew handles minor adjustments and larger repairs, and replaces a door only when it is time.</p>
+            <p className="flex items-center gap-3 text-xs font-bold tracking-[0.18em] text-white uppercase before:h-px before:w-8 before:bg-white">The shop and the crew</p>
+            <h2 className="mt-4 font-display text-5xl uppercase leading-[0.92] text-white md:text-6xl">A family company.</h2>
+            <p className="mt-5 max-w-md leading-relaxed text-white/85">Garage Door Store Boise is a family owned and operated local business, providing garage door service for over 30 years. The shop is at 9075 W Hackamore Dr, Boise, ID 83709. A working door is part of the security and convenience of the house. The crew handles minor adjustments and larger repairs, and replaces a door only when it is time.</p>
             <ul className="mt-8 grid gap-4 sm:grid-cols-3">
               {[
                 ["01", "On site", "A technician looks at the door"],
@@ -568,8 +574,8 @@ function Home() {
                 ["03", "Set price", "Call for a phone estimate"],
               ].map(([n, title, note]) => (
                 <li key={title} className="group relative">
-                  <span className="absolute top-2 right-0 bottom-0 left-2 rounded-2xl bg-[#ed1c24] transition duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:top-3 group-hover:left-3" />
-                  <div className="relative mr-2 mb-2 rounded-2xl bg-[#f7f4ef] px-4 py-4 transition duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:-translate-x-1 group-hover:-translate-y-1">
+                  <span className="absolute top-2 right-0 bottom-0 left-2 rounded-2xl bg-[#1c1f24] transition duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:top-3 group-hover:left-3" />
+                  <div className="relative mr-2 mb-2 rounded-2xl bg-white px-4 py-4 transition duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:-translate-x-1 group-hover:-translate-y-1">
                     <div className="font-display text-3xl leading-none text-[#ed1c24]">{n}</div>
                     <h3 className="mt-3 font-display text-xl uppercase leading-none text-[#1c1f24]">{title}</h3>
                     <p className="mt-2 text-[#4b5563]">{note}</p>
@@ -577,15 +583,15 @@ function Home() {
                 </li>
               ))}
             </ul>
-            <a href="#quote" className="btn-ticket mt-8 inline-flex w-fit items-center justify-center gap-4 rounded-full py-3 pr-5 pl-6 text-sm font-bold text-white">Request a free estimate <span aria-hidden="true">→</span></a>
+            <a href="#quote" className="btn-ticket btn-ticket-ink mt-8 inline-flex w-fit items-center justify-center gap-4 rounded-full py-3 pr-5 pl-6 text-sm font-bold text-white">Request a free estimate <span aria-hidden="true">→</span></a>
           </div>
-          <figure className={`about-frame group relative${aboutIn ? " is-in" : ""}`}>
-            <span className="absolute top-4 right-0 bottom-0 left-4 rounded-[1.4rem] bg-[#ed1c24] transition duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:top-6 group-hover:left-6" />
-            <div className="relative mr-4 mb-4 overflow-hidden rounded-[1.4rem] bg-[#1c1f24] text-white transition duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:-translate-x-1.5 group-hover:-translate-y-1.5">
-              <img src="/images/shop-photo.webp" alt="Garage Door Store Boise crew and red service trucks" className="aspect-video w-full object-cover" />
-              <figcaption className="px-5 py-4">
-                <p className="text-xs font-bold tracking-[0.16em] text-[#ed1c24] uppercase">The shop trucks</p>
-                <p className="mt-1 text-white/80">Red pickups from Garage Door Store Boise. The number on the door is 208.514.2871.</p>
+          <figure className={`about-frame group relative flex h-full flex-col${aboutIn ? " is-in" : ""}`}>
+            <span className="absolute top-4 right-0 bottom-0 left-4 rounded-[1.4rem] bg-[#1c1f24] transition duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:top-6 group-hover:left-6" />
+            <div className="relative mr-4 mb-4 flex min-h-0 flex-1 flex-col overflow-hidden rounded-[1.4rem] bg-[#1c1f24] text-white transition duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:-translate-x-1.5 group-hover:-translate-y-1.5">
+              <img src="/images/shop-photo.webp" alt="Garage Door Store Boise crew and red service trucks" className="aspect-video w-full object-cover lg:aspect-auto lg:min-h-0 lg:flex-1" />
+              <figcaption className="px-6 py-5">
+                <p className="shop-kicker font-bold tracking-[0.16em] text-[#ed1c24] uppercase">The Boise crew</p>
+                <p className="shop-caption mt-2 text-white">Technicians from Garage Door Store Boise, with the red service trucks. The number on the door is 208.514.2871.</p>
               </figcaption>
             </div>
           </figure>
@@ -633,9 +639,9 @@ function Home() {
             <p className="flex items-center gap-3 text-xs font-bold tracking-[0.16em] text-[#ed1c24] uppercase before:h-px before:w-8 before:bg-[#ed1c24]">Repair or replace</p>
             <h2 className="mt-4 font-display text-4xl uppercase leading-[0.92] md:text-5xl">Fix it or replace it? Straight answer.</h2>
             <p className="mt-4 max-w-md text-sm leading-relaxed text-white/70">Repair the door you have. Replace it when it has not run properly, it is too old, or it is severely damaged. Free in-home consultation, and 10% off with that estimate.</p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <a href="tel:2085142871" className="btn-ticket inline-flex items-center justify-center gap-4 rounded-full py-3 pr-5 pl-6 text-center text-sm font-bold text-white">Call 208.514.2871 <span aria-hidden="true">→</span></a>
-              <a href="#quote" className="btn-ticket inline-flex items-center justify-center gap-4 rounded-full py-3 pr-5 pl-6 text-center text-sm font-bold text-white">Get free estimate <span aria-hidden="true">→</span></a>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <a href="tel:2085142871" className="btn-ticket inline-flex shrink-0 items-center justify-center gap-4 rounded-full py-3 pr-5 pl-6 text-sm font-bold whitespace-nowrap text-white">Call 208.514.2871 <span aria-hidden="true">→</span></a>
+              <a href="#quote" className="btn-ticket inline-flex shrink-0 items-center justify-center gap-4 rounded-full py-3 pr-5 pl-6 text-sm font-bold whitespace-nowrap text-white">Get free estimate <span aria-hidden="true">→</span></a>
             </div>
           </div>
         </div>
@@ -681,9 +687,9 @@ function Home() {
           <ul className="mt-10 grid gap-4 lg:grid-cols-2">
             {[
               ["10%", "With the free estimate", "Free in-home consultation, and 10% off with that estimate.", "#quote", "Get free estimate"],
-              ["$125", "Garage door tune-up", "Includes tax and labor. Full tune-up.", "tel:2085142871", "Call 208.514.2871"],
-              ["$350", "Dual spring change", "Includes tax and labor. 10-year warranty.", "tel:2085142871", "Call 208.514.2871"],
-              ["$700", "Garage door motor", "7-foot Genie 2028 belt drive. Two remotes and a keypad.", "tel:2085142871", "Call 208.514.2871"],
+              ["$125", "Garage door tune-up", "Includes tax and labor. Full tune-up.", "#quote", "Get free estimate"],
+              ["$350", "Dual spring change", "Includes tax and labor. 10-year warranty.", "#quote", "Get free estimate"],
+              ["$700", "Garage door motor", "7-foot Genie 2028 belt drive. Two remotes and a keypad.", "#quote", "Get free estimate"],
             ].map(([price, title, note, href, cta]) => (
               <li key={price} className="group relative flex overflow-hidden rounded-[1.3rem] bg-white text-[#1c1f24] transition duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:-translate-y-1.5 hover:shadow-[0_18px_32px_rgba(28,31,36,0.22)]">
                 <div className="grid w-32 shrink-0 place-items-center bg-[#c8171e] px-2 text-center transition duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:bg-[#ed1c24] sm:w-40">
@@ -694,7 +700,7 @@ function Home() {
                 <div className="flex flex-1 flex-col border-l border-dashed border-[#ed1c24]/50 p-5">
                   <p className="ticket-title">{title}</p>
                   <p className="mt-2 flex-1 text-[#4b5563]">{note}</p>
-                  <a href={href} className="btn-ticket mt-4 inline-flex w-fit items-center justify-center gap-4 rounded-full py-3 pr-5 pl-6 text-sm font-bold text-white">{cta} <span aria-hidden="true">→</span></a>
+                  <a href={href} className="btn-ticket mt-4 inline-flex w-fit items-center justify-center gap-4 rounded-full py-3 pr-5 pl-6 text-sm font-bold whitespace-nowrap text-white">{cta} <span aria-hidden="true">→</span></a>
                 </div>
               </li>
             ))}
@@ -851,8 +857,8 @@ function Quote() {
   const [name, setName] = useState("");
 
   return (
-    <section id="quote" className="mx-auto w-full max-w-5xl scroll-mt-24 grid lg:grid-cols-2">
-      <Fade className="flex flex-col justify-center bg-[#1c1f24] px-6 py-16 text-white lg:px-14 lg:py-20">
+    <section id="quote" className="mx-auto grid w-full max-w-5xl scroll-mt-24 items-start lg:grid-cols-2">
+      <div className="flex flex-col justify-center bg-[#1c1f24] px-6 py-16 text-white lg:px-14 lg:py-20">
         <p className="flex items-center gap-3 font-bold tracking-[0.18em] text-[#ed1c24] uppercase before:h-px before:w-8 before:bg-[#ed1c24]">Free in-home consultation</p>
         <h2 className="mt-4 max-w-lg font-display text-5xl uppercase leading-[0.92] md:text-6xl">Request a garage door repair quote in Boise</h2>
         <p className="mt-4 max-w-md text-white/75">Tell us the city and what’s wrong. For a stuck door, that line is answered 24/7.</p>
@@ -877,7 +883,7 @@ function Quote() {
           <span className="px-2 text-white/40">·</span>
           9075 W Hackamore Dr, Boise, ID 83709
         </p>
-      </Fade>
+      </div>
       {sent ? (
         <div className="flex flex-col justify-center bg-[#f7f4ef] px-6 py-16 lg:px-14 lg:py-20">
           <h2 className="font-display text-4xl uppercase">Thanks{name ? `, ${name}` : ""}.</h2>
@@ -885,7 +891,7 @@ function Quote() {
           <button type="button" className="mt-6 w-fit font-bold text-[#1c1f24]" onClick={() => setSent(false)}>Edit the request</button>
         </div>
       ) : (
-        <div className="bg-[#f7f4ef] px-5 py-12 lg:px-12 lg:py-16">
+        <div className="bg-[#f7f4ef] p-5 lg:p-8">
           <div className="relative">
             <span className="absolute top-3 right-0 bottom-0 left-3 rounded-[1.4rem] bg-[#ed1c24]" />
             <form
@@ -897,47 +903,48 @@ function Quote() {
                 setSent(true);
               }}
             >
-              <div>
-                <label className="font-bold text-[#1c1f24]" htmlFor="name">Name</label>
-                <input id="name" name="name" required placeholder="Your name" className="field mt-2 w-full rounded-xl border border-[#d4cdc3] px-4 py-3.5 outline-none" />
-              </div>
-              <div>
-                <label className="font-bold text-[#1c1f24]" htmlFor="phone">Phone</label>
-                <input id="phone" name="phone" required type="tel" placeholder="Best number" className="field mt-2 w-full rounded-xl border border-[#d4cdc3] px-4 py-3.5 outline-none" />
+              <div className="grid gap-5 sm:col-span-2 sm:grid-cols-2">
+                <div>
+                  <label className="font-bold text-[#1c1f24]" htmlFor="name">Name</label>
+                  <input id="name" name="name" required placeholder="Your name" className="field mt-2 w-full rounded-xl border border-[#d4cdc3] px-4 py-3.5 outline-none" />
+                </div>
+                <div>
+                  <label className="font-bold text-[#1c1f24]" htmlFor="phone">Phone</label>
+                  <input id="phone" name="phone" required type="tel" placeholder="Best number" className="field mt-2 w-full rounded-xl border border-[#d4cdc3] px-4 py-3.5 outline-none" />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="font-bold text-[#1c1f24]" htmlFor="email">Email</label>
+                  <input id="email" name="email" required type="email" placeholder="you@email.com" autoComplete="email" className="field mt-2 w-full rounded-xl border border-[#d4cdc3] px-4 py-3.5 outline-none" />
+                </div>
+                <div>
+                  <label className="font-bold text-[#1c1f24]" htmlFor="city">City</label>
+                  <select id="city" name="city" required defaultValue="" className="field mt-2 w-full rounded-xl border border-[#d4cdc3] px-4 py-3.5 pr-10 outline-none">
+                    <option value="" disabled>City</option>
+                    {cities.map((city) => (
+                      <option key={city}>{city}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="font-bold text-[#1c1f24]" htmlFor="service">Service</label>
+                  <select id="service" name="service" required defaultValue="" className="field mt-2 w-full rounded-xl border border-[#d4cdc3] px-4 py-3.5 pr-10 outline-none">
+                    <option value="" disabled>Choose</option>
+                    <option>Garage door repair</option>
+                    <option>New door installation</option>
+                    <option>Opener</option>
+                    <option>Spring replacement</option>
+                  </select>
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="font-bold text-[#1c1f24]" htmlFor="notes">What’s wrong</label>
+                  <textarea id="notes" name="notes" rows={4} placeholder="Spring, off track, opener, or a new door" className="field mt-2 w-full resize-none rounded-xl border border-[#d4cdc3] px-4 py-3.5 outline-none" />
+                </div>
               </div>
               <div className="sm:col-span-2">
-                <label className="font-bold text-[#1c1f24]" htmlFor="email">Email</label>
-                <input id="email" name="email" required type="email" placeholder="you@email.com" autoComplete="email" className="field mt-2 w-full rounded-xl border border-[#d4cdc3] px-4 py-3.5 outline-none" />
-              </div>
-              <div>
-                <label className="font-bold text-[#1c1f24]" htmlFor="city">City</label>
-                <select id="city" name="city" required defaultValue="" className="field mt-2 w-full rounded-xl border border-[#d4cdc3] px-4 py-3.5 outline-none">
-                  <option value="" disabled>Select a city</option>
-                  {cities.map((city) => (
-                    <option key={city}>{city}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="font-bold text-[#1c1f24]" htmlFor="service">Service</label>
-                <select id="service" name="service" required defaultValue="" className="field mt-2 w-full rounded-xl border border-[#d4cdc3] px-4 py-3.5 outline-none">
-                  <option value="" disabled>What do you need?</option>
-                  <option>Garage door repair</option>
-                  <option>New door installation</option>
-                  <option>Opener</option>
-                  <option>Spring replacement</option>
-                </select>
-              </div>
-              <div className="sm:col-span-2">
-                <label className="font-bold text-[#1c1f24]" htmlFor="notes">What’s wrong</label>
-                <textarea id="notes" name="notes" rows={4} placeholder="Spring, off track, opener, or a new door" className="field mt-2 w-full rounded-xl border border-[#d4cdc3] px-4 py-3.5 outline-none" />
-              </div>
-              <div className="sm:col-span-2">
-                <button type="submit" className="btn-ticket inline-flex w-fit items-center justify-center gap-4 rounded-full py-3 pr-5 pl-6 text-sm font-bold text-white">
+                <button type="submit" className="btn-ticket inline-flex w-fit items-center justify-center gap-4 rounded-full py-3 pr-5 pl-6 text-sm font-bold whitespace-nowrap text-white">
                   Send request
                   <span aria-hidden="true">→</span>
                 </button>
-                <p className="mt-3 text-[#4b5563]">This preview form does not send the note to the shop. Call or use Email the shop.</p>
               </div>
             </form>
           </div>
