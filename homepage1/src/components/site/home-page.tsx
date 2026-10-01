@@ -10,7 +10,6 @@ import {
   Menu,
   MessageCircleQuestion,
   Phone,
-  Play,
   Printer,
   Star,
   X,
@@ -24,9 +23,7 @@ import {
   PHONE,
   PHONE_HREF,
   REVIEWS_LINK,
-  VIDEO,
   areas,
-  brands,
   coupons,
   faqs,
   gallery,
@@ -50,37 +47,15 @@ const reasons = [
   { title: "Respect for your home", text: "A text when we're on the way, with a photo of the tech." },
 ];
 
-const flow = [
-  { n: "01", title: "Tell us what's wrong", text: "Call or schedule and share what the door is doing — or not doing." },
-  { n: "02", title: "We inspect the door", text: "A technician looks at the system, names the issue, and prices it first." },
-  { n: "03", title: "Get it moving again", text: "Repair, spring, opener, or a new door — then a clear bill." },
-];
-
-const advice = [
-  {
-    title: "When a spring snaps",
-    text: "A door that feels suddenly heavy is not a motor problem. Don't force it. Dual spring changes include tax, labor, and a 10-year warranty.",
-    image: "/brand/doorD.webp",
-    alt: "Wood garage door set in stone",
-  },
-  {
-    title: "Repair the door or replace it",
-    text: "Replace it if it has been unreliable, is badly damaged, or is missing basic safety features. Otherwise a repair is usually the faster fix.",
-    image: "/brand/steel.webp",
-    alt: "White steel garage doors",
-  },
-  {
-    title: "What a tune-up covers",
-    text: "The $125 tune-up is the cheapest way to keep a small noise from becoming a stuck door. Tax and labor are included.",
-    image: "/brand/img1402.webp",
-    alt: "Carriage garage door with black hardware",
-  },
-  {
-    title: "Why the door stopped",
-    text: "Photo eyes, a dead remote, a spring, limits, or a track out of line. Call before you pull on it.",
-    image: "/brand/doorB.webp",
-    alt: "Pair of wood garage doors",
-  },
+const heroSlides = [
+  { src: "/brand/hero/hero-01.jpg", alt: "Three-car garage on a Boise-area home" },
+  { src: "/brand/hero/hero-02.jpg", alt: "Stone house with three wood garage doors" },
+  { src: "/brand/hero/hero-03.jpg", alt: "Arched wood garage door set in stone" },
+  { src: "/brand/hero/hero-04.jpg", alt: "Pair of wood garage doors under a gable" },
+  { src: "/brand/hero/hero-05.jpg", alt: "Wood garage doors on a navy house" },
+  { src: "/brand/hero/hero-06.jpg", alt: "White garage door with a row of windows" },
+  { src: "/brand/hero/hero-07.jpg", alt: "Modern wood garage door on a metal building" },
+  { src: "/brand/hero/hero-08.jpg", alt: "Carriage garage door with black hardware" },
 ];
 
 function SocialIcon({ label }: { label: string }) {
@@ -210,13 +185,15 @@ export function HomePage() {
   const [faq, setFaq] = useState(0);
   const [shot, setShot] = useState<number | null>(null);
   const [quote, setQuote] = useState(false);
-  const [video, setVideo] = useState(false);
   const [service, setService] = useState("Garage Door Repair");
   const [sent, setSent] = useState(false);
+  const [bannerSent, setBannerSent] = useState(false);
   const [error, setError] = useState("");
+  const [bannerError, setBannerError] = useState("");
   const [ask, setAsk] = useState(false);
   const [askItem, setAskItem] = useState<number | null>(null);
   const [openReview, setOpenReview] = useState<string | null>(null);
+  const [hero, setHero] = useState(0);
   const reviewRow = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -250,11 +227,18 @@ export function HomePage() {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = menu || quote || video || shot !== null ? "hidden" : "";
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    const id = window.setInterval(() => setHero((current) => (current + 1) % heroSlides.length), 5500);
+    return () => window.clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = menu || quote || shot !== null ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [menu, quote, video, shot]);
+  }, [menu, quote, shot]);
 
   function openQuote(next?: string) {
     if (next) setService(next);
@@ -276,6 +260,21 @@ export function HomePage() {
     }
     setError("");
     setSent(true);
+    event.currentTarget.reset();
+  }
+
+  function submitBanner(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const name = String(data.get("name") || "").trim();
+    const phone = String(data.get("phone") || "").trim();
+    if (name.length < 2 || phone.replace(/\D/g, "").length < 7) {
+      setBannerError("Add your name and a phone number we can reach.");
+      setBannerSent(false);
+      return;
+    }
+    setBannerError("");
+    setBannerSent(true);
     event.currentTarget.reset();
   }
 
@@ -370,7 +369,14 @@ export function HomePage() {
       <main id="content">
         <section id="top" className="px-3 pt-3 sm:px-4">
           <div className="relative min-h-[640px] overflow-hidden rounded-[1.75rem] sm:min-h-[700px]">
-            <img src="/brand/img3839.webp" alt="Three-car garage on a Boise-area home" className="absolute inset-0 h-full w-full object-cover object-center" />
+            {heroSlides.map((slide, index) => (
+              <img
+                key={slide.src}
+                src={slide.src}
+                alt={slide.alt}
+                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${index === hero ? "opacity-100" : "opacity-0"} ${index === hero ? "kenburns" : ""}`}
+              />
+            ))}
             <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/75 to-ink/15" />
             <div className="relative z-10 flex min-h-[640px] flex-col justify-between p-6 sm:min-h-[700px] sm:p-10 lg:p-14">
               <div className="max-w-xl pt-4 lg:pt-8">
@@ -400,46 +406,55 @@ export function HomePage() {
                   </a>
                 </div>
               </div>
-              <dl className="mx-auto mt-10 flex w-full max-w-4xl flex-wrap justify-center gap-x-14 gap-y-6 border-t border-white/20 pt-6 text-center">
-                <div className="min-w-32">
-                  <dt className="font-display text-4xl uppercase text-white sm:text-5xl">
+              <dl className="mt-10 grid w-full grid-cols-2 gap-x-6 gap-y-5 border-t border-white/15 pt-6 lg:grid-cols-4 lg:gap-8 lg:pr-16">
+                <div className="flex items-center gap-3">
+                  <dt className="font-display text-4xl leading-none text-white sm:text-5xl">
                     <CountUp to={30} suffix="+" />
                   </dt>
-                  <dd className="mt-1 text-xs uppercase tracking-wider text-white/70">Years of experience</dd>
+                  <dd className="text-[11px] font-medium uppercase leading-tight tracking-[0.12em] text-white/75">
+                    Years of
+                    <br />
+                    experience
+                  </dd>
                 </div>
-                <div className="min-w-32">
-                  <dt className="font-display text-4xl uppercase text-white sm:text-5xl">
+                <div className="flex items-center gap-3">
+                  <dt className="font-display text-4xl leading-none text-white sm:text-5xl">
                     <CountUp to={24} suffix="/7" />
                   </dt>
-                  <dd className="mt-1 text-xs uppercase tracking-wider text-white/70">Technicians on call</dd>
+                  <dd className="text-[11px] font-medium uppercase leading-tight tracking-[0.12em] text-white/75">
+                    Technicians
+                    <br />
+                    on call
+                  </dd>
                 </div>
-                <div className="min-w-32">
-                  <dt className="font-display text-4xl uppercase text-white sm:text-5xl">
+                <div className="flex items-center gap-3">
+                  <dt className="font-display text-4xl leading-none text-white sm:text-5xl">
                     <CountUp to={10} suffix=" yr" />
                   </dt>
-                  <dd className="mt-1 text-xs uppercase tracking-wider text-white/70">Spring warranty</dd>
+                  <dd className="text-[11px] font-medium uppercase leading-tight tracking-[0.12em] text-white/75">
+                    Spring
+                    <br />
+                    warranty
+                  </dd>
                 </div>
-                <div className="min-w-32">
-                  <dt className="font-display text-4xl uppercase text-white sm:text-5xl">Same day</dt>
-                  <dd className="mt-1 text-xs uppercase tracking-wider text-white/70">When the door is stuck</dd>
+                <div className="flex items-center gap-3">
+                  <dt className="whitespace-nowrap font-display text-3xl uppercase leading-none text-white sm:text-4xl">Same day</dt>
+                  <dd className="text-[11px] font-medium uppercase leading-tight tracking-[0.12em] text-white/75">
+                    When the door
+                    <br />
+                    is stuck
+                  </dd>
                 </div>
               </dl>
             </div>
-            <button
-              type="button"
-              onClick={() => setVideo(true)}
-              className="tap absolute right-6 top-1/3 z-10 grid size-16 place-items-center rounded-full bg-white/90 text-ink shadow-xl hover:bg-white sm:right-10 sm:size-20"
-              aria-label="Play Garage Door Store Boise video"
-            >
-              <Play className="size-7 fill-ink" aria-hidden />
-            </button>
           </div>
         </section>
 
         <section id="about" className="mx-auto max-w-7xl px-5 py-20 lg:py-28">
-          <div className="flex flex-wrap items-end justify-between gap-6">
-            <h2 className="max-w-md font-display text-4xl uppercase leading-none sm:text-5xl">What's happening with your garage door?</h2>
-            <p className="max-w-sm text-sm leading-relaxed text-muted">Choose the issue that sounds closest and we'll tell you what it usually takes to get the door moving.</p>
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red">Issues</p>
+            <h2 className="mt-3 font-display text-4xl uppercase leading-none sm:text-5xl">What's happening with your garage door?</h2>
+            <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-muted">Choose the issue that sounds closest and we'll tell you what it usually takes to get the door moving.</p>
           </div>
           <div className="mt-12 grid gap-4 lg:grid-cols-3">
             <div className="grid gap-4">
@@ -473,7 +488,10 @@ export function HomePage() {
         <section id="services" className="bg-card py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-5">
             <div className="flex flex-wrap items-end justify-between gap-6">
-              <h2 className="max-w-xl font-display text-4xl uppercase leading-none sm:text-5xl">Solutions built to keep your garage door moving</h2>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red">Services</p>
+                <h2 className="mt-3 max-w-xl font-display text-4xl uppercase leading-none sm:text-5xl">Solutions built to keep your garage door moving</h2>
+              </div>
               <Pill dark onClick={() => openQuote()}>View all services</Pill>
             </div>
             <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -481,11 +499,11 @@ export function HomePage() {
                 <article key={item.title} className="card-zoom group relative h-80 overflow-hidden rounded-3xl">
                   <img src={item.image} alt="" className="h-full w-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-ink/10" />
-                  <p className="absolute left-5 top-5 text-xs uppercase tracking-[0.18em] text-white/75">Service {String(index + 1).padStart(2, "0")}</p>
-                  <div className="absolute inset-x-5 bottom-5 text-white">
-                    <h3 className="font-display text-2xl uppercase">{item.title}</h3>
+                  <p className="absolute left-5 top-5 text-xs font-semibold uppercase tracking-[0.18em] text-red">Service {String(index + 1).padStart(2, "0")}</p>
+                  <div className="absolute inset-x-5 bottom-5">
+                    <h3 className="font-display text-2xl uppercase text-white">{item.title}</h3>
                     <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-white/80">{item.text}</p>
-                    <button type="button" onClick={() => openQuote(item.quote)} className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-white">
+                    <button type="button" onClick={() => openQuote(item.quote)} className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-red">
                       Explore service <ArrowRight className="size-4" aria-hidden />
                     </button>
                   </div>
@@ -498,7 +516,7 @@ export function HomePage() {
         <section id="coupons" className="mx-auto max-w-7xl px-5 py-16">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-sm font-medium uppercase tracking-[0.18em] text-red">Posted prices</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red">Coupons</p>
               <h2 className="mt-2 font-display text-3xl uppercase sm:text-4xl">Popular jobs, in writing</h2>
             </div>
             <button type="button" onClick={() => window.print()} className="tap inline-flex items-center gap-2 rounded-full border border-line bg-card px-4 py-2 text-sm font-medium">
@@ -518,15 +536,17 @@ export function HomePage() {
           </div>
         </section>
 
-        <section className="mx-auto grid max-w-7xl items-center gap-10 px-5 py-16 lg:grid-cols-2 lg:py-24">
+        <section className="w-full border-y border-ink/20 bg-white">
+          <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 py-16 lg:grid-cols-2 lg:px-8 lg:py-24">
           <div>
-            <h2 className="font-display text-4xl uppercase leading-none sm:text-5xl">Clear answers before the work begins.</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red">Why us</p>
+            <h2 className="mt-3 font-display text-4xl uppercase leading-none sm:text-5xl">Clear answers before the work begins.</h2>
             <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">
               A stuck door can stop the whole day. We name the issue, price it, and fix it with the same local crew — family owned in Boise for more than 30 years.
             </p>
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
               {reasons.map((item) => (
-                <div key={item.title} className="rounded-2xl border border-line bg-card p-4">
+                <div key={item.title} className="rounded-2xl border border-line bg-paper p-4">
                   <h3 className="font-display text-lg uppercase">{item.title}</h3>
                   <p className="mt-1 text-sm text-muted">{item.text}</p>
                 </div>
@@ -536,30 +556,17 @@ export function HomePage() {
               Why choose us <ArrowRight className="size-4" aria-hidden />
             </a>
           </div>
-          <img src="/brand/house.webp" alt="Carriage-style wood garage doors on a navy house" className="aspect-[4/5] w-full rounded-[1.75rem] object-cover" />
-        </section>
-
-        <section className="px-3 sm:px-4">
-          <div className="rounded-[1.75rem] bg-ink px-6 py-16 text-white sm:px-10 lg:px-14 lg:py-20">
-            <div className="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-4">
-              <h2 className="max-w-md font-display text-4xl uppercase leading-none sm:text-5xl">From garage door problem to working door.</h2>
-              <p className="max-w-xs text-sm text-white/70">Three steps from the first call to a door that opens.</p>
-            </div>
-            <ol className="mx-auto mt-10 grid max-w-6xl gap-4 lg:grid-cols-3">
-              {flow.map((step) => (
-                <li key={step.n} className="rounded-3xl bg-white p-6 text-ink">
-                  <p className="text-right font-display text-sm text-red">{step.n}</p>
-                  <h3 className="mt-8 font-display text-2xl uppercase">{step.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted">{step.text}</p>
-                </li>
-              ))}
-            </ol>
+          <img src="/brand/house.webp" alt="Carriage-style wood garage doors on a navy house" className="aspect-[4/5] w-full rounded-[1.5rem] object-cover" />
           </div>
         </section>
 
-        <section id="projects" className="mx-auto max-w-7xl px-5 py-20 lg:py-28">
+        <section id="projects" className="w-full border-y border-ink/20 bg-white">
+          <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8 lg:py-24">
           <div className="flex flex-wrap items-end justify-between gap-6">
-            <h2 className="max-w-xl font-display text-4xl uppercase leading-none sm:text-5xl">Work that changes how the whole home feels.</h2>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red">Projects</p>
+              <h2 className="mt-3 max-w-xl font-display text-4xl uppercase leading-none sm:text-5xl">Work that changes how the whole home feels.</h2>
+            </div>
             <a href="#gallery" className="tap inline-flex items-center gap-3 rounded-full bg-ink py-1.5 pl-5 pr-1.5 font-display text-sm uppercase tracking-wider text-white">
               View all projects
               <span className="grid size-8 place-items-center rounded-full bg-red text-white">
@@ -582,13 +589,15 @@ export function HomePage() {
               </button>
             ))}
           </div>
+          </div>
         </section>
 
         <section id="reviews" className="bg-paper py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-5">
             <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-[#f4f4f4] px-5 py-4">
               <div>
-                <h2 className="font-display text-2xl uppercase leading-none sm:text-3xl">Top rated in Boise</h2>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red">Testimonials</p>
+                <h2 className="mt-2 font-display text-2xl uppercase leading-none sm:text-3xl">Top rated in Boise</h2>
                 <p className="mt-2 flex flex-wrap items-center gap-2 text-sm text-ink">
                   <GoogleMark />
                   <GoldStars />
@@ -662,11 +671,33 @@ export function HomePage() {
           </div>
         </section>
 
-        <section id="faq" className="mx-auto grid max-w-7xl gap-10 px-5 py-20 lg:grid-cols-[0.8fr_1.2fr] lg:py-28">
-          <div>
-            <h2 className="font-display text-4xl uppercase leading-none sm:text-5xl">Before you book a service call.</h2>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted">Straight answers about repairs, replacements, and what a tune-up includes.</p>
-            <div className="mt-6 flex gap-3 text-ink">
+        <section id="faq" className="w-full border-y border-ink/20 bg-white">
+          <div className="mx-auto grid max-w-7xl items-stretch gap-10 px-5 py-16 lg:grid-cols-[0.8fr_1.2fr] lg:px-8 lg:py-24">
+          <div className="flex h-full flex-col justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red">FAQ</p>
+              <h2 className="mt-3 font-display text-4xl uppercase leading-[0.92] sm:text-5xl">
+                Before you book
+                <br />
+                a service call.
+              </h2>
+              <div className="mt-5 h-1 w-14 bg-red" />
+              <p className="mt-5 max-w-md text-base leading-relaxed text-muted">
+                Straight answers about repairs, replacements,
+                <br className="hidden sm:block" />
+                and what a tune-up includes.
+              </p>
+            </div>
+            <a href={PHONE_HREF} className="inline-flex items-center gap-3 text-ink">
+              <span className="grid size-12 place-items-center rounded-full bg-red text-white">
+                <Phone className="size-5" aria-hidden />
+              </span>
+              <span>
+                <span className="block text-xs uppercase tracking-[0.18em] text-muted">Talk to a technician</span>
+                <span className="font-display text-2xl">{PHONE}</span>
+              </span>
+            </a>
+            <div className="flex gap-3 text-ink">
               {socials.map((item) => (
                 <a key={item.label} href={item.href} target="_blank" rel="noreferrer" aria-label={item.label} className="grid size-10 place-items-center rounded-full border border-line hover:bg-card">
                   <SocialIcon label={item.label} />
@@ -678,7 +709,7 @@ export function HomePage() {
             {faqs.map((item, index) => {
               const open = faq === index;
               return (
-                <div key={item.q} className={`overflow-hidden rounded-2xl ${open ? "bg-ink text-white" : "border border-line bg-card"}`}>
+                <div key={item.q} className={`overflow-hidden rounded-2xl ${open ? "bg-ink text-white" : "border border-line bg-paper"}`}>
                   <button type="button" className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left" aria-expanded={open} onClick={() => setFaq(open ? -1 : index)}>
                     <span className="font-medium">{item.q}</span>
                     <ChevronDown className={`size-5 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
@@ -692,54 +723,88 @@ export function HomePage() {
               );
             })}
           </div>
+          </div>
         </section>
 
         <section className="px-3 pb-4 sm:px-4">
-          <div className="relative overflow-hidden rounded-[1.75rem] px-6 py-20 text-center text-white sm:py-28">
+          <div className="relative overflow-hidden rounded-[1.75rem] px-6 py-12 text-white sm:px-10 sm:py-16">
             <img src="/brand/doorC.webp" alt="" className="absolute inset-0 h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-ink/75" />
-            <div className="relative mx-auto max-w-2xl">
-              <h2 className="font-display text-4xl uppercase leading-none sm:text-6xl">Garage door stuck or refusing to open?</h2>
-              <p className="mt-4 text-white/80">Request a free estimate, or call and talk to a technician now. Someone answers 24/7.</p>
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                <Pill onClick={() => openQuote()}>Schedule service</Pill>
-                <a href={PHONE_HREF} className="tap inline-flex items-center gap-2 rounded-full border border-white/50 px-5 py-3 text-sm text-white hover:bg-white hover:text-ink">
+            <div className="absolute inset-0 bg-ink/80" />
+            <div className="relative grid items-center gap-10 lg:grid-cols-2">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red">Schedule</p>
+                <h2 className="mt-3 font-display text-4xl uppercase leading-none sm:text-6xl">Garage door stuck or refusing to open?</h2>
+                <p className="mt-4 max-w-md text-white/80">Request a free estimate, or call and talk to a technician now. Someone answers 24/7.</p>
+                <a href={PHONE_HREF} className="tap mt-8 inline-flex items-center gap-2 rounded-full border border-white/50 px-5 py-3 text-sm text-white hover:bg-white hover:text-ink">
                   <Phone className="size-4" aria-hidden />
                   Call {PHONE}
                 </a>
               </div>
+              <form onSubmit={submitBanner} noValidate className="rounded-3xl border border-white/20 bg-white/10 p-5 backdrop-blur-md sm:p-6">
+                {bannerSent ? (
+                  <div>
+                    <h3 className="font-display text-3xl uppercase">We'll call you shortly.</h3>
+                    <p className="mt-2 text-sm text-white/75">A technician follows up on this request. If the door is stuck right now, call {PHONE}.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <p className="font-display text-2xl uppercase">Request a callback</p>
+                    {bannerError ? <p className="text-sm text-red">{bannerError}</p> : null}
+                    <label className="block text-sm">
+                      Name
+                      <input name="name" required autoComplete="name" className="mt-1 w-full rounded-xl border border-white/25 bg-white/10 px-3 py-3 text-white outline-none placeholder:text-white/40 focus:border-white" />
+                    </label>
+                    <label className="block text-sm">
+                      Phone
+                      <input name="phone" required type="tel" autoComplete="tel" className="mt-1 w-full rounded-xl border border-white/25 bg-white/10 px-3 py-3 text-white outline-none placeholder:text-white/40 focus:border-white" />
+                    </label>
+                    <label className="block text-sm">
+                      Service
+                      <select name="service" value={service} onChange={(event) => setService(event.target.value)} className="mt-1 w-full rounded-xl border border-white/25 bg-ink/40 px-3 py-3 text-white outline-none focus:border-white">
+                        {quoteServices.map((item) => (
+                          <option key={item} className="text-ink">{item}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <button type="submit" className="tap w-full rounded-full bg-red py-3.5 font-display uppercase tracking-wider text-white hover:bg-red-deep">
+                      Schedule service
+                    </button>
+                  </div>
+                )}
+              </form>
             </div>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-7xl px-5 py-20 lg:py-28">
-          <div className="flex flex-wrap items-end justify-between gap-6">
-            <h2 className="max-w-md font-display text-4xl uppercase leading-none sm:text-5xl">Helpful advice for a safer, better-working door</h2>
-            <p className="max-w-sm text-sm leading-relaxed text-muted">Practical signs, what a tune-up covers, and when to stop pulling on the door.</p>
-          </div>
-          <div className="mt-12 grid gap-6 sm:grid-cols-2">
-            {advice.map((item) => (
-              <article key={item.title} className="grid gap-4 sm:grid-cols-[180px_1fr] sm:items-center">
-                <img src={item.image} alt={item.alt} className="h-36 w-full rounded-2xl object-cover sm:h-32" />
-                <div>
-                  <h3 className="font-display text-xl uppercase leading-tight">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted">{item.text}</p>
-                  <button type="button" onClick={() => openQuote()} className="mt-3 inline-flex items-center gap-1 text-sm font-medium">
-                    Ask a technician <ArrowRight className="size-4" aria-hidden />
-                  </button>
-                </div>
-              </article>
-            ))}
           </div>
         </section>
 
         <section id="contact" className="bg-card py-20 lg:py-28">
           <div className="mx-auto grid max-w-7xl items-stretch gap-8 px-5 lg:grid-cols-2">
             <div className="flex flex-col justify-center">
-              <p className="text-sm font-medium uppercase tracking-[0.18em] text-red">Find the shop</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red">Location</p>
               <h2 className="mt-2 font-display text-4xl uppercase leading-none sm:text-5xl">9075 W Hackamore Dr</h2>
               <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">Boise, ID 83709. Free in-home estimates across the Treasure Valley. Call if the door is stuck — a technician answers.</p>
-              <a href={PHONE_HREF} className="mt-5 font-display text-2xl text-red">{PHONE}</a>
+              <div className="mt-6 grid max-w-lg grid-cols-2 gap-3">
+                <div className="rounded-2xl border border-line bg-paper p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-red">Phone</p>
+                  <p className="mt-2 font-display text-2xl uppercase">24 / 7</p>
+                  <p className="mt-1 text-sm text-muted">Someone answers, day or night.</p>
+                </div>
+                <div className="rounded-2xl border border-line bg-paper p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-red">Visits</p>
+                  <p className="mt-2 font-display text-2xl uppercase">Mon – Sun</p>
+                  <p className="mt-1 text-sm text-muted">Same day when the door is stuck.</p>
+                </div>
+                <div className="rounded-2xl border border-line bg-paper p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-red">Estimates</p>
+                  <p className="mt-2 font-display text-2xl uppercase">Free</p>
+                  <p className="mt-1 text-sm text-muted">In home, across the Treasure Valley.</p>
+                </div>
+                <div className="rounded-2xl border border-line bg-paper p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-red">Shop</p>
+                  <p className="mt-2 font-display text-2xl uppercase">Boise</p>
+                  <p className="mt-1 text-sm text-muted">9075 W Hackamore Dr</p>
+                </div>
+              </div>
+              <a href={PHONE_HREF} className="mt-5 block font-display text-2xl text-red">{PHONE}</a>
               <a href={MAP_LINK} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm font-medium">
                 <MapPin className="size-4 text-red" aria-hidden />
                 Open this pin in Google Maps
@@ -750,91 +815,92 @@ export function HomePage() {
             </div>
             <iframe title="Map to Garage Door Store Boise" src={MAP_EMBED} className="min-h-80 w-full rounded-[1.75rem] border-0" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
           </div>
-          <div className="mt-16 overflow-hidden border-y border-line py-6">
-            <div className="marquee-track flex w-max items-center gap-14 px-8">
-              {[...brands, ...brands].map((brand, index) => (
-                <img key={`${brand.src}-${index}`} src={brand.src} alt={brand.alt} className="h-10 w-auto object-contain sm:h-12" />
-              ))}
-            </div>
-          </div>
         </section>
       </main>
 
-      <footer className="bg-ink px-5 pb-24 pt-16 text-white lg:pb-12">
-        <div className="mx-auto grid max-w-7xl gap-10 sm:grid-cols-2 lg:grid-cols-5">
-          <div>
-            <h2 className="font-display text-lg uppercase">About the store</h2>
-            <p className="mt-3 text-sm leading-relaxed text-white/70">Family-owned garage door repair and installation in Boise. Licensed and insured. Over 30 years in the Treasure Valley.</p>
-            <div className="mt-4 flex gap-3">
-              {socials.map((item) => (
-                <a key={item.label} href={item.href} target="_blank" rel="noreferrer" aria-label={item.label} className="grid size-9 place-items-center rounded-full border border-white/20 hover:bg-white hover:text-ink">
-                  <SocialIcon label={item.label} />
-                </a>
-              ))}
+      <footer className="border-t-4 border-red bg-paper px-5 pb-24 pt-12 text-ink lg:pb-10">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-wrap items-center justify-between gap-6 border-b border-line pb-8">
+            <img src="/brand/logo.png" alt="Garage Door Store Boise" className="h-16 w-auto sm:h-20" />
+            <p className="max-w-xs text-sm leading-relaxed text-muted">Family-owned repair and installation in Boise. Licensed and insured. Over 30 years in the Treasure Valley.</p>
+            <div className="flex flex-wrap gap-3">
+              <a href={PHONE_HREF} className="inline-flex items-center gap-2 rounded-full bg-red px-5 py-3 text-sm font-medium text-white">
+                <Phone className="size-4" aria-hidden />
+                {PHONE}
+              </a>
+              <button type="button" onClick={() => openQuote()} className="rounded-full border border-ink px-5 py-3 text-sm font-medium">
+                Free estimate
+              </button>
             </div>
           </div>
-          <div>
-            <h2 className="font-display text-lg uppercase">Quick links</h2>
-            <ul className="mt-3 space-y-2 text-sm text-white/75">
-              {[
-                ["About", "#about"],
-                ["Services", "#services"],
-                ["Projects", "#projects"],
-                ["Reviews", "#reviews"],
-                ["FAQ", "#faq"],
-              ].map(([label, href]) => (
-                <li key={label}>
-                  <a href={href} className="hover:text-white">{label}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h2 className="font-display text-lg uppercase">Our services</h2>
-            <ul className="mt-3 space-y-2 text-sm text-white/75">
-              {services.map((item) => (
-                <li key={item.title}>
-                  <button type="button" className="text-left hover:text-white" onClick={() => openQuote(item.quote)}>
-                    {item.title}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h2 className="font-display text-lg uppercase">Locations</h2>
-            <ul className="mt-3 space-y-1 text-sm text-white/75">
-              {areas.slice(0, 8).map((city) => (
-                <li key={city}>{city}, ID</li>
-              ))}
-            </ul>
-          </div>
-          <div id="visit">
-            <h2 className="font-display text-lg uppercase">Need service?</h2>
-            <p className="mt-3 text-sm text-white/70">Stuck door, broken spring, or a new door. Call — someone answers.</p>
-            <a href={PHONE_HREF} className="mt-3 block font-display text-xl text-red">{PHONE}</a>
-            <a href={`mailto:${EMAIL}`} className="mt-2 flex items-center gap-2 text-sm text-white/75">
-              <Mail className="size-4" aria-hidden />
-              {EMAIL}
-            </a>
-            <p className="mt-3 flex items-start gap-2 text-sm text-white/75">
-              <MapPin className="mt-0.5 size-4 shrink-0" aria-hidden />
-              <a href={MAP_LINK} target="_blank" rel="noreferrer">
-                {ADDRESS[0]}
-                <br />
-                {ADDRESS[1]}
+          <div className="grid gap-10 py-10 sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <h2 className="font-display text-sm uppercase tracking-[0.16em]">Quick links</h2>
+              <ul className="mt-4 space-y-2 text-sm text-muted">
+                {[
+                  ["About", "#about"],
+                  ["Services", "#services"],
+                  ["Projects", "#projects"],
+                  ["Reviews", "#reviews"],
+                  ["FAQ", "#faq"],
+                ].map(([label, href]) => (
+                  <li key={label}>
+                    <a href={href} className="hover:text-red">{label}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h2 className="font-display text-sm uppercase tracking-[0.16em]">Our services</h2>
+              <ul className="mt-4 space-y-2 text-sm text-muted">
+                {services.map((item) => (
+                  <li key={item.title}>
+                    <button type="button" className="text-left hover:text-red" onClick={() => openQuote(item.quote)}>
+                      {item.title}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h2 className="font-display text-sm uppercase tracking-[0.16em]">Locations</h2>
+              <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-muted">
+                {areas.slice(0, 8).map((city) => (
+                  <li key={city}>{city}</li>
+                ))}
+              </ul>
+            </div>
+            <div id="visit">
+              <h2 className="font-display text-sm uppercase tracking-[0.16em]">Visit</h2>
+              <a href={MAP_LINK} target="_blank" rel="noreferrer" className="mt-4 flex items-start gap-2 text-sm text-muted hover:text-red">
+                <MapPin className="mt-0.5 size-4 shrink-0 text-red" aria-hidden />
+                <span>
+                  {ADDRESS[0]}
+                  <br />
+                  {ADDRESS[1]}
+                </span>
               </a>
-            </p>
-            <p className="mt-3 flex items-center gap-2 text-sm text-white/75">
-              <Check className="size-4 text-red" aria-hidden />
-              Mon–Sun, technicians on call
-            </p>
+              <a href={`mailto:${EMAIL}`} className="mt-3 flex items-center gap-2 text-sm text-muted hover:text-red">
+                <Mail className="size-4 text-red" aria-hidden />
+                {EMAIL}
+              </a>
+              <p className="mt-3 flex items-center gap-2 text-sm text-muted">
+                <Check className="size-4 text-red" aria-hidden />
+                Mon–Sun, technicians on call
+              </p>
+              <div className="mt-5 flex gap-3">
+                {socials.map((item) => (
+                  <a key={item.label} href={item.href} target="_blank" rel="noreferrer" aria-label={item.label} className="grid size-9 place-items-center rounded-full border border-line hover:border-red hover:text-red">
+                    <SocialIcon label={item.label} />
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
-        <p className="mx-auto mt-14 max-w-7xl select-none text-center font-display text-[18vw] uppercase leading-none text-white/10">Boise</p>
-        <div className="mx-auto mt-6 flex max-w-7xl flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-white/50">
-          <p>© {new Date().getFullYear()} Garage Door Store Boise. Licensed and insured.</p>
-          <a href="#top" className="hover:text-white">Back to top</a>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-6 text-xs text-muted">
+            <p>© {new Date().getFullYear()} Garage Door Store Boise. Licensed and insured.</p>
+            <a href="#top" className="hover:text-red">Back to top</a>
+          </div>
         </div>
       </footer>
 
@@ -943,17 +1009,6 @@ export function HomePage() {
                 </button>
               </form>
             )}
-          </div>
-        </div>
-      ) : null}
-
-      {video ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/90 p-4" role="dialog" aria-modal="true" aria-label="Company video">
-          <button type="button" className="absolute right-4 top-4 grid size-11 place-items-center rounded-full bg-white text-ink" aria-label="Close video" onClick={() => setVideo(false)}>
-            <X className="size-5" />
-          </button>
-          <div className="aspect-video w-full max-w-4xl overflow-hidden rounded-2xl bg-black">
-            <iframe title="Garage Door Store Boise video" src={`${VIDEO}?autoplay=1`} className="h-full w-full" allow="autoplay; encrypted-media" allowFullScreen />
           </div>
         </div>
       ) : null}
