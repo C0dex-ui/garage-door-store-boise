@@ -1,9 +1,9 @@
 # Garage Door Store Boise
 
-The homepage lives in [`homepage`](./homepage).
+The homepage1 lives in [`homepage1`](./homepage1).
 
 ```bash
-cd homepage
+cd homepage1
 npm install
 npm run dev
 ```
