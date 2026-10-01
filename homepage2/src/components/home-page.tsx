@@ -146,7 +146,7 @@ function Hero() {
           <br />
           Your statement.
           <br />
-          <em>Your garage door.</em>
+          <em className="hm-line">Your garage door.</em>
         </h1>
         <p className="hm-lead">
           Thoughtfully selected garage doors, dependable repairs, and professional installation for Boise and the Treasure Valley.
@@ -198,7 +198,7 @@ function Hero() {
 
 function Collection() {
   return (
-    <section className="hm-band" id="collection" aria-labelledby="collection-title">
+    <section className="hm-band hm-paper" id="collection" aria-labelledby="collection-title">
       <div className="hm-collection-head">
         <p className="hm-kicker">The collection</p>
         <div className="hm-collection-row">
@@ -338,7 +338,7 @@ function Shop() {
     return () => observer.disconnect();
   }, []);
   return (
-    <section className="hm-band" aria-labelledby="shop-title">
+    <section className="hm-band hm-paper" aria-labelledby="shop-title">
       <div className="hm-shop">
         <figure className="hm-shop-photo">
           <img src="/media/truck.webp" alt="Garage Door Store Boise service trucks and crew" />
@@ -378,7 +378,7 @@ function Reviews() {
     frame.scrollBy({ left: direction * (card.getBoundingClientRect().width + gap), behavior: reduce ? "auto" : "smooth" });
   }
   return (
-    <section className="hm-band" id="reviews" aria-labelledby="reviews-title">
+    <section className="hm-band hm-paper" id="reviews" aria-labelledby="reviews-title">
       <div className="hm-greviews">
         <div className="hm-greviews-head">
           <p className="hm-kicker">Reviews</p>
@@ -445,7 +445,7 @@ function Portfolio() {
   const [filter, setFilter] = useState<(typeof filters)[number]["id"]>("all");
   const visible = shots.filter((shot) => filter === "all" || shot.group === filter);
   return (
-    <section className="hm-band" id="work" aria-labelledby="work-title">
+    <section className="hm-band hm-paper" id="work" aria-labelledby="work-title">
       <div className="hm-wrap">
         <div className="hm-split-head">
           <div>
@@ -539,7 +539,7 @@ function Prices() {
     return () => window.clearInterval(id);
   }, []);
   return (
-    <section className="hm-band" id="prices" aria-labelledby="prices-title">
+    <section className="hm-band hm-paper" id="prices" aria-labelledby="prices-title">
       <div className="hm-wrap">
         <div className="hm-price-head">
           <div>
@@ -596,7 +596,7 @@ function Finale() {
 function Questions() {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section className="hm-band" id="questions" aria-labelledby="faq-title">
+    <section className="hm-band hm-paper" id="questions" aria-labelledby="faq-title">
       <div className="hm-wrap">
         <div className="hm-faq">
           <div className="hm-faq-copy">

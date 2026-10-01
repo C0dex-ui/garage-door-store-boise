@@ -26,8 +26,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
     if (!root) return;
     const nodes = [...root.querySelectorAll<HTMLElement>(".hm-band, .hm-finale, .page-main")];
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const lines = [...root.querySelectorAll<HTMLElement>(".hm-line")];
     if (reduce) {
       nodes.forEach((node) => node.classList.add("is-shown"));
+      lines.forEach((node) => node.classList.add("is-drawn"));
       return;
     }
     const seen = new IntersectionObserver(
@@ -40,8 +42,20 @@ export function Shell({ children }: { children: React.ReactNode }) {
       },
       { threshold: 0, rootMargin: "0px 0px -10% 0px" },
     );
+    const draw = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          entry.target.classList.toggle("is-drawn", entry.isIntersecting);
+        }
+      },
+      { threshold: 0.65 },
+    );
     nodes.forEach((node) => seen.observe(node));
-    return () => seen.disconnect();
+    lines.forEach((node) => draw.observe(node));
+    return () => {
+      seen.disconnect();
+      draw.disconnect();
+    };
   }, [path]);
 
   useEffect(() => {

@@ -1675,7 +1675,60 @@ right:-8vw
 }
 .hm-wrap { width: min(1180px, calc(100% - (var(--pad) * 2))); margin-inline: auto; }
 .hm-band { padding: clamp(3.2rem, 7vw, 5.5rem) 0; }
-.hm-dark { background: #141614; color: var(--color-ivory); }
+.hm-dark {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(255, 99, 56, 0.16), transparent 42%),
+    #141614;
+  color: var(--color-ivory);
+}
+.hm-paper {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(255, 99, 56, 0.14), transparent 42%),
+    linear-gradient(165deg, #f7f3eb 0%, #ebe4d6 100%);
+}
+.hm-paper::before,
+.hm-dark::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 320px;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(23, 25, 24, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(23, 25, 24, 0.07) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(180deg, #000 35%, transparent);
+}
+.hm-dark::before {
+  background-image:
+    linear-gradient(to right, rgba(244, 240, 232, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(244, 240, 232, 0.06) 1px, transparent 1px);
+}
+.hm-line {
+  font-style: normal;
+  background-image: linear-gradient(var(--color-signal), var(--color-signal));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 0.11em;
+}
+.hm-line.is-drawn {
+  background-size: 100% 0.11em;
+  transition: background-size 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@supports (animation-timeline: view()) {
+  .hm-line {
+    animation: hm-draw linear both;
+    animation-timeline: view();
+    animation-range: entry 20% cover 48%;
+  }
+  .hm-line.is-drawn { transition: none; }
+}
+@keyframes hm-draw {
+  from { background-size: 0% 0.11em; }
+  to { background-size: 100% 0.11em; }
+}
 .hm-kicker {
   display: flex;
   align-items: center;
@@ -1788,7 +1841,6 @@ right:-8vw
 }
 .hm-hero h1 em {
   font-style: normal;
-  box-shadow: inset 0 -0.12em 0 var(--color-signal);
 }
 .hm-hero .hm-lead { color: var(--color-steel); max-width: 34rem; }
 .hm-hero-spec {
@@ -2476,9 +2528,44 @@ right:-8vw
   .home h2 { font-size: clamp(1.7rem, 7.2vw, 2.15rem); }
   .hm-greviews-head h2,
   .hm-price-head h2 { white-space: normal; font-size: clamp(1.7rem, 7.5vw, 2.2rem); }
-  .hm-styles { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
-  .hm-style { aspect-ratio: 3 / 4; }
-  .hm-style-desc { max-height: 5.5rem; opacity: 1; margin-top: 0.2rem; }
+  .hm-hero-spec { gap: 0.4rem; }
+  .hm-hero-spec li {
+    margin: 0;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--color-line);
+    border-right: 1px solid var(--color-line);
+  }
+  .hm-collection-row { flex-direction: column; align-items: stretch; gap: 0.9rem; }
+  .hm-collection-row .hm-btn { width: 100%; }
+  .hm-styles {
+    display: flex;
+    grid-template-columns: none;
+    gap: 0.75rem;
+    width: 100%;
+    margin: 1.4rem 0 0;
+    padding: 0 1rem 0.4rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1rem;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .hm-styles::-webkit-scrollbar { display: none; }
+  .hm-style { flex: 0 0 78%; scroll-snap-align: start; aspect-ratio: 3 / 4; }
+  .hm-style-meta strong { font-size: 0.95rem; }
+  .hm-style-desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    max-height: none;
+    opacity: 1;
+    margin-top: 0.2rem;
+  }
+  .hm-gnext { display: none; }
+  .hm-quiet { display: inline-flex; align-items: center; min-height: 44px; }
+  .site-footer li a,
+  .foot-base a { min-height: 44px; display: inline-flex; align-items: center; }
+  .hm-facts span { overflow-wrap: anywhere; }
   .hm-slist button { align-items: flex-start; padding-top: 0.85rem; padding-bottom: 0.85rem; }
   .hm-service-slides { min-height: 220px; }
   .hm-shop-photo { min-height: 280px; }
@@ -2575,7 +2662,11 @@ right:-8vw
   .hm-ticket,
   .hm-ticket:nth-child(even),
   .hm-ticket.is-front,
-  .hm-ticket:hover { transform: none; transition: none; }
+  .hm-ticket:hover,
+  .hm-line,
+  .hm-line.is-drawn { transform: none; transition: none; animation: none; }
+  .hm-line,
+  .hm-line.is-drawn { background-size: 100% 0.11em; }
   .js .hm-band,
   .js .hm-finale,
   .js .page-main,
