@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { Building2, Clock3, Home, MapPin, Phone, Users } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   ADDRESS_CITY,
@@ -9,24 +10,30 @@ import {
   PHONE_DISPLAY,
   PHONE_TEL,
   residentialStyles,
+  REVIEW_LINKS,
   reviews,
   serviceAreas,
   services,
-  symptoms,
 } from "@/data/site";
 
-const quotes = [
+const googleReviews = [
   {
     name: "Lauri T.",
     place: "Boise",
+    stars: 5,
     text: "My garage door spring snapped late Thursday night. I called the next morning and my call was returned within the hour. I wasn’t able to be there Friday afternoon because of Dr. appointments, so they came out Saturday morning first thing. The team replaced the spring and added another spring on my double door. They were done in less than 30 minutes. Fast, efficient, courteous service.",
   },
-  ...reviews.map((review) => ({
-    name: review.name,
-    place: "place" in review ? review.place : undefined,
-    text: review.text,
-  })),
+  ...reviews,
 ];
+
+function reviewInitials(name: string) {
+  return name
+    .split(" ")
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+}
 
 const shots = [
   { src: "/media/wood-4.webp", alt: "Wood grain sectional garage door from the company gallery", label: "Wood and stone", group: "wood", span: "tall" },
@@ -80,8 +87,6 @@ export function HomePage() {
       <Hero />
       <Collection />
       <Services />
-      <Symptoms />
-      <Compare />
       <Shop />
       <Reviews />
       <Portfolio />
@@ -223,9 +228,19 @@ function Collection() {
 function Services() {
   const [index, setIndex] = useState(0);
   const current = services[index];
+
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    const id = window.setInterval(() => {
+      setIndex((n) => (n + 1) % services.length);
+    }, 4500);
+    return () => window.clearInterval(id);
+  }, [index]);
+
   return (
     <section className="hm-band hm-dark" id="services" aria-labelledby="services-title">
-      <div className="hm-wrap hm-two">
+      <div className="hm-wrap hm-two hm-services">
         <div>
           <p className="hm-kicker">Services</p>
           <h2 id="services-title">When something’s wrong, we get to work.</h2>
@@ -244,12 +259,16 @@ function Services() {
             ))}
           </div>
         </div>
-        <figure className="hm-service-photo">
-          <img key={current.image} className="hm-swap" src={current.image} alt={current.imageAlt} />
+        <figure className="hm-service-card">
+          <div className="hm-service-slides" aria-hidden="true">
+            {services.map((service, i) => (
+              <img key={service.id} className={i === index ? "is-on" : undefined} src={service.image} alt="" />
+            ))}
+          </div>
           <figcaption>
             <p>{current.summary}</p>
             <a href={current.href} className="hm-btn hm-btn-signal">
-              {current.id === "repair" ? "Request a repair visit" : current.cta}
+              {current.id === "repair" ? "Request a repair visit" : current.cta} →
             </a>
           </figcaption>
         </figure>
@@ -258,127 +277,79 @@ function Services() {
   );
 }
 
-function Symptoms() {
-  const [index, setIndex] = useState(0);
-  const current = symptoms[index];
+function FactFigure({ value, suffix, active }: { value: number; suffix: string; active: boolean }) {
+  const [n, setN] = useState(value);
+  useEffect(() => {
+    if (!active) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      setN(value);
+      return;
+    }
+    const start = performance.now();
+    let frame = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / 1100);
+      setN(Math.round((1 - (1 - t) ** 3) * value));
+      if (t < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [active, value]);
   return (
-    <section className="hm-band" aria-labelledby="symptom-title">
-      <div className="hm-wrap hm-sym">
-        <div>
-          <p className="hm-kicker">Repair</p>
-          <h2 id="symptom-title">What’s your garage door doing?</h2>
-          <p className="hm-note">
-            Pick the closest symptom. It is a starting point, not a diagnosis. A technician still has to see the door.
-          </p>
-        </div>
-        <div className="hm-radios" role="radiogroup" aria-label="Door symptoms">
-          {symptoms.map((item, i) => (
-            <button key={item.id} type="button" role="radio" aria-checked={i === index} onClick={() => setIndex(i)}>
-              <i />
-              {item.title.replace(/\.$/, "")}
-            </button>
-          ))}
-        </div>
-        <article className="hm-guide hm-swap" key={current.id} aria-live="polite">
-          <p className="hm-kicker">General guidance</p>
-          <h3>{current.title.replace(/\.$/, "")}</h3>
-          <p>{current.guidance}</p>
-          <div className="hm-actions">
-            <Link to="/contact" className="hm-btn hm-btn-signal">
-              Request an estimate
-            </Link>
-            <a className="hm-btn hm-btn-line" href={PHONE_TEL}>
-              Call {PHONE_DISPLAY}
-            </a>
-          </div>
-        </article>
-      </div>
-    </section>
-  );
-}
-
-function Compare() {
-  const [pos, setPos] = useState(56);
-  const frame = useRef<HTMLDivElement>(null);
-
-  function move(clientX: number) {
-    const box = frame.current?.getBoundingClientRect();
-    if (!box) return;
-    const next = ((clientX - box.left) / box.width) * 100;
-    setPos(Math.min(90, Math.max(10, next)));
-  }
-
-  return (
-    <section className="hm-band hm-dark" aria-labelledby="compare-title">
-      <div className="hm-wrap hm-two hm-compare">
-        <div>
-          <p className="hm-kicker">Architecture</p>
-          <h2 id="compare-title">The right door changes everything.</h2>
-          <p className="hm-note hm-note-light">
-            Drag between two different Treasure Valley installs. These are not a before-and-after of the same house.
-          </p>
-          <p className="hm-note hm-note-light">
-            Left: carriage wood on a navy house. Right: another residential door from the gallery.
-          </p>
-        </div>
-        <div
-          className="cmp"
-          ref={frame}
-          onPointerDown={(event) => {
-            event.currentTarget.setPointerCapture(event.pointerId);
-            move(event.clientX);
-          }}
-          onPointerMove={(event) => {
-            if (event.currentTarget.hasPointerCapture(event.pointerId)) move(event.clientX);
-          }}
-        >
-          <img src="/media/wood-3.webp" alt="Wood grain garage doors on a residence in the company gallery" />
-          <img
-            className="cmp-top"
-            src="/media/hero-blue-house.webp"
-            alt="Wood-tone garage doors on a blue home from the company gallery"
-            style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}
-          />
-          <span className="cmp-bar" style={{ left: `${pos}%` }} aria-hidden="true" />
-          <input
-            type="range"
-            min={10}
-            max={90}
-            value={pos}
-            aria-label="Compare two gallery installations"
-            onChange={(event) => setPos(Number(event.target.value))}
-            suppressHydrationWarning
-          />
-        </div>
-      </div>
-    </section>
+    <>
+      {n}
+      {suffix}
+    </>
   );
 }
 
 function Shop() {
   const facts = [
-    { strong: "30+", label: "Years in the Treasure Valley" },
-    { strong: "24/7", label: "Phone answered, as published by the shop" },
-    { strong: "Free", label: "In-home estimate" },
-    { strong: "Local", label: "Family-owned, Boise" },
-    { strong: "Both", label: "Homes and commercial openings" },
-    { strong: "Valley", label: "Boise, Meridian, Eagle, Nampa" },
+    { strong: "30+", label: "Years in the Treasure Valley", Icon: Clock3, count: 30, suffix: "+" },
+    { strong: "24/7", label: "A technician takes the call", Icon: Phone, count: 24, suffix: "/7" },
+    { strong: "Free", label: "In-home estimate", Icon: Home },
+    { strong: "Family", label: "Owned and operated in Boise", Icon: Users },
+    { strong: "Homes", label: "And commercial openings", Icon: Building2 },
+    { strong: "Boise", label: "Meridian, Eagle, Nampa, and the valley", Icon: MapPin },
   ];
+  const list = useRef<HTMLUListElement>(null);
+  const [counting, setCounting] = useState(false);
+  useEffect(() => {
+    const node = list.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setCounting(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.4 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
   return (
     <section className="hm-band" aria-labelledby="shop-title">
-      <div className="hm-wrap hm-shop">
-        <div>
-          <p className="hm-kicker">The shop</p>
-          <h2 id="shop-title">Local know-how. Over 30 years of experience.</h2>
-          <p className="hm-note">
-            Family-owned and operated in Boise. The shop publishes a free in-home estimate, residential and commercial work, and a crew you can call.
-          </p>
-          <img src="/media/truck.webp" alt="Garage Door Store Boise service trucks" />
-        </div>
-        <ul className="hm-facts">
+      <div className="hm-shop">
+        <figure className="hm-shop-photo">
+          <img src="/media/truck.webp" alt="Garage Door Store Boise service trucks and crew" />
+          <figcaption>
+            <p className="hm-kicker">The shop</p>
+            <h2 id="shop-title">Local know-how. Over 30 years on the job.</h2>
+            <p className="hm-note">
+              Family-owned in Boise. Free in-home estimates for homes and commercial openings, from a crew you can call.
+            </p>
+          </figcaption>
+        </figure>
+        <ul className="hm-facts" ref={list}>
           {facts.map((fact) => (
             <li key={fact.strong}>
-              <strong>{fact.strong}</strong>
+              <fact.Icon aria-hidden="true" strokeWidth={1.5} />
+              <strong>
+                {fact.count ? <FactFigure value={fact.count} suffix={fact.suffix} active={counting} /> : fact.strong}
+              </strong>
               <span>{fact.label}</span>
             </li>
           ))}
@@ -389,34 +360,74 @@ function Shop() {
 }
 
 function Reviews() {
-  const [index, setIndex] = useState(0);
-  const quote = quotes[index];
+  const scroller = useRef<HTMLDivElement>(null);
+  const average = (googleReviews.reduce((sum, review) => sum + review.stars, 0) / googleReviews.length).toFixed(1);
+  function shift(direction: number) {
+    const frame = scroller.current;
+    const card = frame?.querySelector("article");
+    if (!frame || !card) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const gap = 12;
+    frame.scrollBy({ left: direction * (card.getBoundingClientRect().width + gap), behavior: reduce ? "auto" : "smooth" });
+  }
   return (
     <section className="hm-band" id="reviews" aria-labelledby="reviews-title">
-      <div className="hm-wrap">
-        <div className="hm-split-head">
-          <div>
-            <p className="hm-kicker">Reviews</p>
-            <h2 id="reviews-title">Trust built one visit at a time.</h2>
-          </div>
-          <a className="hm-quiet" href="https://www.google.com/search?q=Garage+Door+Store+Boise+reviews">
-            Google · published reviews
-          </a>
-        </div>
-        <blockquote className="hm-quote hm-swap" key={quote.name + quote.text.slice(0, 24)}>{quote.text}</blockquote>
-        <div className="hm-quote-bar">
-          <p>
-            {quote.name}
-            {quote.place ? ` · ${quote.place}` : ""}
+      <div className="hm-greviews">
+        <div className="hm-greviews-head">
+          <p className="hm-kicker">Reviews</p>
+          <h2 id="reviews-title">Neighbors, after the truck leaves.</h2>
+          <p className="hm-note">
+            Published reviews of the Boise shop. The score is the average of the notes shown here.
           </p>
-          <div>
-            <button type="button" aria-label="Previous review" onClick={() => setIndex((i) => (i - 1 + quotes.length) % quotes.length)}>
-              ←
-            </button>
-            <button type="button" aria-label="Next review" onClick={() => setIndex((i) => (i + 1) % quotes.length)}>
+        </div>
+        <div className="hm-gindex">
+          <header className="hm-gindex-bar">
+            <p className="hm-gscore">
+              <span className="hm-gword" aria-label="Google">
+                <span>G</span>
+                <span>o</span>
+                <span>o</span>
+                <span>g</span>
+                <span>l</span>
+                <span>e</span>
+              </span>
+              <span className="hm-gstars" aria-label={`${average} out of 5`}>
+                ★★★★★
+              </span>
+              <strong>{average}</strong>
+              <span>{googleReviews.length} published reviews</span>
+            </p>
+          </header>
+          <div className="hm-gindex-row">
+            <div className="hm-gcards" ref={scroller}>
+              {googleReviews.map((review) => (
+                <article key={review.name}>
+                  <header>
+                    <span aria-hidden="true">{reviewInitials(review.name)}</span>
+                    <div>
+                      <strong>{review.name}</strong>
+                      {"place" in review && review.place ? <em>{review.place}</em> : null}
+                    </div>
+                  </header>
+                  <p className="hm-gstars" aria-label={`${review.stars} out of 5`}>
+                    {"★".repeat(review.stars)}
+                  </p>
+                  <p>{review.text}</p>
+                </article>
+              ))}
+            </div>
+            <button type="button" className="hm-gnext" aria-label="Next reviews" onClick={() => shift(1)}>
               →
             </button>
           </div>
+        </div>
+        <div className="hm-actions">
+          <Link to="/contact" className="hm-btn hm-btn-signal">
+            Request an estimate
+          </Link>
+          <a className="hm-btn hm-btn-line" href={REVIEW_LINKS[0].href}>
+            See on Google
+          </a>
         </div>
       </div>
     </section>
