@@ -204,64 +204,56 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
       <footer className="site-footer">
         <div className="foot-grid">
-          <div>
-            <img src="/media/logo.png" alt="Garage Door Store Boise" width={160} height={46} />
-            <p className="lede" style={{ marginTop: "0.9rem" }}>
-              Family-owned repair and installation. Licensed, bonded, and insured, as published on the site. Over 30 years in the Treasure Valley.
+          <div className="foot-brand">
+            <img src="/media/logo.png" alt="Garage Door Store Boise" width={168} height={48} />
+            <p>
+              Family-owned repair and installation. Licensed and insured, as published by the shop. Over 30 years in the Treasure Valley.
             </p>
           </div>
           <div>
             <h3>Visit</h3>
             <ul>
-              <li>{ADDRESS_LINE}</li>
-              <li>{ADDRESS_CITY}</li>
               <li>
-                <a href={PHONE_TEL}>{PHONE_DISPLAY}</a>
+                <a href={MAPS_DIRECTIONS}>
+                  {ADDRESS_LINE}, {ADDRESS_CITY}
+                </a>
+              </li>
+              <li>
+                <a className="foot-phone" href={PHONE_TEL}>
+                  {PHONE_DISPLAY}
+                </a>
               </li>
               <li>
                 <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
               </li>
-              <li>Phone answered 24/7, as published</li>
-              <li>
-                <a href={MAPS_DIRECTIONS}>Directions</a>
-              </li>
+              <li className="foot-quiet">Phone answered 24/7, as published.</li>
             </ul>
           </div>
           <div>
-            <h3>Our work</h3>
+            <h3>Work</h3>
             <ul>
-              <li><Link to="/about">About Us</Link></li>
-              <li><a href="/about#team">Our Team</a></li>
-              <li><Link to="/doors">Services</Link></li>
-              <li><Link to="/repair">Repair</Link></li>
-              <li><Link to="/installation">Installation</Link></li>
-              <li><Link to="/commercial">Commercial</Link></li>
-              <li><Link to="/work">Gallery</Link></li>
-              <li><Link to="/blog">Blog</Link></li>
-              <li><Link to="/testimonials">Testimonials</Link></li>
-              <li><Link to="/contact">Contact</Link></li>
+              <li><Link to="/doors">Door styles</Link></li>
+              <li><Link to="/repair">Repair and installation</Link></li>
+              <li><Link to="/work">Projects</Link></li>
+              <li><Link to="/testimonials">Reviews</Link></li>
+              <li><a href="/#prices">Published prices</a></li>
             </ul>
           </div>
           <div>
             <h3>Valley</h3>
-            <ul>
-              {serviceAreas.map((city) => (
-                <li key={city}>{city}</li>
-              ))}
+            <p className="foot-cities">{serviceAreas.slice(0, 6).join(" · ")}</p>
+            <div className="foot-social">
               {SOCIAL.map((s) => (
-                <li key={s.href}>
-                  <a href={s.href}>{s.label}</a>
-                </li>
+                <a key={s.href} href={s.href}>
+                  {s.label}
+                </a>
               ))}
-              <li>
-                <Link to="/privacy">Privacy</Link>
-              </li>
-            </ul>
+            </div>
           </div>
         </div>
         <div className="foot-base">
-          <span>© {new Date().getFullYear()} Garage Door Store Boise</span>
-          <span>Prices shown are the shop’s published figures and can change.</span>
+          <span>© {new Date().getFullYear()} Garage Door Store Boise. Prices shown are the shop’s published figures and can change.</span>
+          <Link to="/privacy">Privacy</Link>
         </div>
       </footer>
     </>

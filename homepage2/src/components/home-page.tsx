@@ -1,11 +1,10 @@
+import { EstimateForm } from "@/components/estimate-form";
 import { Link } from "@tanstack/react-router";
-import { Building2, Clock3, Home, MapPin, Phone, Users } from "lucide-react";
+import { Ban, Building2, Clock3, Columns2, DoorClosed, DoorOpen, HelpCircle, Home, LayoutGrid, MapPin, Phone, Scan, ShieldCheck, Users, Warehouse, Wrench } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   ADDRESS_CITY,
   ADDRESS_LINE,
-  brands,
-  MAPS_EMBED,
   offers,
   PHONE_DISPLAY,
   PHONE_TEL,
@@ -36,14 +35,13 @@ function reviewInitials(name: string) {
 }
 
 const shots = [
-  { src: "/media/wood-4.webp", alt: "Wood grain sectional garage door from the company gallery", label: "Wood and stone", group: "wood", span: "tall" },
+  { src: "/media/wood-4.webp", alt: "Wood grain sectional garage door from the company gallery", label: "Wood and stone", group: "wood" },
   { src: "/media/carriage-2.webp", alt: "Carriage garage door with decorative windows, company gallery", label: "Carriage pair", group: "carriage" },
   { src: "/media/wood-3.webp", alt: "Wood grain garage doors on a residence in the company gallery", label: "Gallery wood", group: "wood" },
   { src: "/media/carriage-1.webp", alt: "Carriage-style garage door from the company gallery", label: "Carriage hardware", group: "carriage" },
-  { src: "/media/wood-2.webp", alt: "Second wood grain garage door from the company gallery", label: "Winter wood", group: "wood" },
-  { src: "/media/steel.webp", alt: "White carriage-style garage doors from the company gallery", label: "Arched steel", group: "traditional", span: "wide" },
+  { src: "/media/steel.webp", alt: "White carriage-style garage doors from the company gallery", label: "Arched steel", group: "traditional" },
   { src: "/media/trad-1.webp", alt: "Traditional raised-panel garage door from the company gallery", label: "Matched pair", group: "traditional" },
-  { src: "/media/truck.webp", alt: "Garage Door Store Boise service trucks", label: "The crew", group: "shop" },
+  { src: "/media/wood-2.webp", alt: "Second wood grain garage door from the company gallery", label: "Winter wood", group: "wood" },
   { src: "/media/comm-1.webp", alt: "Commercial garage door from the Garage Door Store Boise gallery", label: "Commercial bay", group: "commercial" },
   { src: "/media/comm-2.webp", alt: "Commercial bay door from the company gallery", label: "Shop door", group: "commercial" },
 ];
@@ -58,24 +56,29 @@ const filters = [
 
 const faqs = [
   {
-    q: "When should I replace a garage door with a new one?",
-    a: "When panels are badly damaged, the door sits twisted, or a repair is the wrong fix for the opening. The shop looks at the door before recommending repair or replacement. A free estimate is how they ask you to start.",
+    q: "When should I replace it?",
+    a: "Damaged panels, a twisted door, or a repair that will not hold. Start with a free estimate.",
+    Icon: DoorOpen,
   },
   {
-    q: "How do I choose a good company for garage door repair in Boise?",
-    a: "Garage Door Store Boise publishes that it is family-owned, licensed, bonded, and insured, and that a technician is available to take the call 24/7. Ask for the price before anyone is scheduled.",
+    q: "How do I choose a shop?",
+    a: "Family-owned, licensed, bonded, and insured. Someone answers 24/7. Ask the price first.",
+    Icon: ShieldCheck,
   },
   {
-    q: "Can I install a garage door myself?",
-    a: "The company installs the door. Springs and cables stay under high tension even when the door is down. Do not wind, adjust, or disconnect them yourself.",
+    q: "Can I install it myself?",
+    a: "No. The shop installs it. Springs stay under tension even when the door is down.",
+    Icon: Ban,
   },
   {
-    q: "What is a garage door tune-up?",
-    a: "The current site lists a full tune-up at $125, including tax and labor. It is meant to keep a working door working. It is not a substitute for a broken spring or a door that is off its track. Confirm the figure before you book.",
+    q: "What is a tune-up?",
+    a: "$125, tax and labor included. It keeps a working door working. Confirm before you book.",
+    Icon: Wrench,
   },
   {
-    q: "Why did my garage door stop working?",
-    a: "It can be a spring, an opener, a track, the photo eyes, or a lock. Picking a symptom on this page is a starting point, not a diagnosis. A technician still has to see the door.",
+    q: "Why did it stop?",
+    a: "Spring, opener, track, photo eyes, or a lock. A technician still has to see the door.",
+    Icon: HelpCircle,
   },
 ];
 
@@ -92,7 +95,6 @@ export function HomePage() {
       <Portfolio />
       <Area />
       <Prices />
-      <About />
       <Finale />
       <Questions />
     </main>
@@ -100,11 +102,11 @@ export function HomePage() {
 }
 
 const heroClips = [
-  { src: "/media/hero-navy.mp4", label: "Carriage wood" },
-  { src: "/media/hero-wood.mp4", label: "Wood and windows" },
-  { src: "/media/hero-angle.mp4", label: "Three-quarter view" },
-  { src: "/media/hero-carriage.mp4", label: "Carriage pair" },
-  { src: "/media/hero-bay.mp4", label: "Commercial bay" },
+  { src: "/media/hero-navy.mp4", label: "Carriage wood", Icon: DoorClosed },
+  { src: "/media/hero-wood.mp4", label: "Wood and windows", Icon: LayoutGrid },
+  { src: "/media/hero-angle.mp4", label: "Three-quarter view", Icon: Scan },
+  { src: "/media/hero-carriage.mp4", label: "Carriage pair", Icon: Columns2 },
+  { src: "/media/hero-bay.mp4", label: "Commercial bay", Icon: Warehouse },
 ];
 
 function Hero() {
@@ -130,6 +132,9 @@ function Hero() {
       }
     });
   }, [index, play]);
+
+  const clip = heroClips[play ? index : 0];
+  const ClipIcon = clip.Icon;
 
   return (
     <section className="hm-hero" aria-label="Introduction">
@@ -181,8 +186,10 @@ function Hero() {
           )}
         </div>
         <figcaption>
-          <strong>{String((play ? index : 0) + 1).padStart(2, "0")}</strong>
-          <span>{play ? heroClips[index].label : "Carriage wood"}</span>
+          <span className="hm-hero-ico" aria-hidden="true">
+            <ClipIcon size={16} />
+          </span>
+          <span>{clip.label}</span>
         </figcaption>
       </figure>
     </section>
@@ -444,6 +451,7 @@ function Portfolio() {
           <div>
             <p className="hm-kicker">Portfolio</p>
             <h2 id="work-title">Built around your home.</h2>
+            <p className="hm-note">Photographs from the shop gallery. Same frame on every look.</p>
           </div>
           <div className="hm-filters" role="tablist" aria-label="Gallery filters">
             {filters.map((item) => (
@@ -453,14 +461,22 @@ function Portfolio() {
             ))}
           </div>
         </div>
-        <div className={filter === "all" ? "hm-folio" : "hm-folio is-filtered"}>
-          {visible.map((shot) => (
-            <figure key={shot.src} className={[filter === "all" && shot.span ? `is-${shot.span}` : "", "hm-swap"].filter(Boolean).join(" ")}>
-              <img src={shot.src} alt={shot.alt} />
-              <figcaption>{shot.label}</figcaption>
+        <div className="hm-folio hm-swap" key={filter}>
+          {visible.map((shot, index) => (
+            <figure key={shot.src} className="hm-shot">
+              <div className="hm-shot-frame">
+                <img src={shot.src} alt={shot.alt} />
+              </div>
+              <figcaption>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <strong>{shot.label}</strong>
+              </figcaption>
             </figure>
           ))}
         </div>
+        <Link to="/work" className="hm-quiet">
+          See the full gallery
+        </Link>
       </div>
     </section>
   );
@@ -468,27 +484,42 @@ function Portfolio() {
 
 function Area() {
   const shown = areaPills.filter((city) => (serviceAreas as readonly string[]).includes(city));
+  const [from, setFrom] = useState<string | null>(null);
+  const shop = "43.5945155,-116.2951392";
+  const mapSrc = from
+    ? `https://www.google.com/maps/embed?origin=mfe&pb=!1m8!4m6!4m1!2s${from.replace(/ /g, "+")},+Idaho!4m3!3m2!1d43.5945155!2d-116.2951392!5e1`
+    : `https://www.google.com/maps/embed?origin=mfe&pb=!1m4!2m1!1s${shop}!5e1!6i16`;
   return (
     <section className="hm-band hm-dark" aria-labelledby="area-title">
-      <div className="hm-wrap hm-two">
-        <div>
+      <div className="hm-wrap hm-area">
+        <div className="hm-area-copy">
           <p className="hm-kicker">Service area</p>
           <h2 id="area-title">Proud to serve the Treasure Valley.</h2>
           <p className="hm-note hm-note-light">
-            {ADDRESS_LINE}, {ADDRESS_CITY}. The shop lists these communities. Call if you are nearby and not sure.
+            {ADDRESS_LINE}, {ADDRESS_CITY}. Pick a town and the same map draws the drive to the shop.
           </p>
           <ul className="hm-pills">
             {shown.map((city) => (
-              <li key={city}>{city}</li>
+              <li key={city}>
+                <button type="button" aria-pressed={from === city} onClick={() => setFrom(city === from ? null : city)}>
+                  {city}
+                </button>
+              </li>
             ))}
           </ul>
-          <p className="hm-count">{shown.length} directions</p>
+          <p className="hm-count">{from ? `From ${from} to the shop` : `${shown.length} directions`}</p>
           <Link to="/contact" className="hm-btn hm-btn-signal">
             Ask if you live in the area
           </Link>
         </div>
         <div className="hm-map">
-          <iframe title="Map showing Garage Door Store Boise" src={MAPS_EMBED} loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+          <iframe
+            key={from ?? "shop"}
+            title={from ? `Satellite directions from ${from} to Garage Door Store Boise` : "Satellite map of Garage Door Store Boise"}
+            src={mapSrc}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
         </div>
       </div>
     </section>
@@ -496,64 +527,48 @@ function Area() {
 }
 
 function Prices() {
-  const notes = [
-    "Includes tax and labor. Full tune-up.",
-    "Includes tax and labor. 10-year warranty.",
-    "Torque tube replacement.",
-    "7' Genie 2028 belt drive, 2 remotes, and keypad.",
-  ];
+  const [front, setFront] = useState(0);
+  const paused = useRef(false);
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    const id = window.setInterval(() => {
+      if (paused.current) return;
+      setFront((n) => (n + 1) % offers.length);
+    }, 2200);
+    return () => window.clearInterval(id);
+  }, []);
   return (
     <section className="hm-band" id="prices" aria-labelledby="prices-title">
       <div className="hm-wrap">
-        <p className="hm-kicker">Published prices</p>
-        <h2 id="prices-title">What the shop has in writing.</h2>
-        <p className="hm-note">
-          These amounts are the ones published on the current site. Call to confirm before you book. Anything else is an estimate, not a price.
-        </p>
-        <ul className="hm-prices">
-          {offers.map((offer, i) => (
-            <li key={offer.name}>
+        <div className="hm-price-head">
+          <div>
+            <p className="hm-kicker">Published prices</p>
+            <h2 id="prices-title">What the shop has in writing.</h2>
+          </div>
+          <p className="hm-note">
+            These amounts are the ones published on the current site. Call to confirm before you book. Anything else is an estimate, not a price.
+          </p>
+        </div>
+        <ul
+          className="hm-prices"
+          onMouseEnter={() => {
+            paused.current = true;
+          }}
+          onMouseLeave={() => {
+            paused.current = false;
+          }}
+        >
+          {offers.map((offer, index) => (
+            <li key={offer.name} className={index === front ? "hm-ticket is-front" : "hm-ticket"}>
+              <p>Garage Door Store · Boise</p>
               <span>{offer.price}</span>
+              <hr />
               <strong>{offer.name}</strong>
-              <em>{notes[i]}</em>
+              <em>{offer.includes}</em>
             </li>
           ))}
         </ul>
-      </div>
-    </section>
-  );
-}
-
-function About() {
-  return (
-    <section className="hm-band hm-about" aria-labelledby="about-title">
-      <div className="hm-wrap hm-two">
-        <figure>
-          <img src="/media/truck.webp" alt="Garage Door Store Boise trucks at a local job" />
-          <div className="hm-brands">
-            {brands.map((brand) => (
-              <img key={brand.name} src={brand.src} alt={brand.name} />
-            ))}
-          </div>
-        </figure>
-        <div>
-          <p className="hm-kicker">About</p>
-          <h2 id="about-title">Good work. Local people. Built on experience.</h2>
-          <p className="hm-note">
-            The same local crew. A text when the technician is on the way, with a photo, is something customers mention by name.
-          </p>
-          <div className="hm-video">
-            <iframe
-              title="Garage Door Store Boise on YouTube"
-              src="https://www.youtube.com/embed/bSldLJXGTGU"
-              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-          <a className="hm-quiet" href="https://www.youtube.com/watch?v=bSldLJXGTGU">
-            Watch on YouTube
-          </a>
-        </div>
       </div>
     </section>
   );
@@ -563,17 +578,16 @@ function Finale() {
   return (
     <section className="hm-finale" aria-labelledby="finale-title">
       <img src="/media/trad-1.webp" alt="" />
-      <div>
-        <h2 id="finale-title">Ready for a better garage door?</h2>
-        <p>Let’s find the right solution for your home or business.</p>
-        <div className="hm-actions">
-          <Link to="/contact" className="hm-btn hm-btn-signal">
-            Get your free estimate
-          </Link>
+      <div className="hm-finale-panel">
+        <div className="hm-finale-copy">
+          <p className="hm-kicker">Free estimate</p>
+          <h2 id="finale-title">Ready for a better garage door?</h2>
+          <p>Send the details, or call the shop.</p>
           <a className="hm-btn hm-btn-ghost" href={PHONE_TEL}>
             Call {PHONE_DISPLAY}
           </a>
         </div>
+        <EstimateForm id="home-estimate" compact />
       </div>
     </section>
   );
@@ -583,19 +597,35 @@ function Questions() {
   const [open, setOpen] = useState<number | null>(0);
   return (
     <section className="hm-band" id="questions" aria-labelledby="faq-title">
-      <div className="hm-wrap hm-faq">
-        <h2 id="faq-title">Questions, answered briefly</h2>
-        {faqs.map((item, i) => {
-          const on = open === i;
-          return (
-            <div key={item.q} className={on ? "is-open" : undefined}>
-              <button type="button" aria-expanded={on} onClick={() => setOpen(on ? null : i)}>
-                {item.q}
-              </button>
-              {on && <p>{item.a}</p>}
-            </div>
-          );
-        })}
+      <div className="hm-wrap">
+        <div className="hm-faq">
+          <div className="hm-faq-copy">
+            <p className="hm-kicker">Questions</p>
+            <h2 id="faq-title">Answered briefly.</h2>
+            <p className="hm-note">
+              Five short answers from what the shop already publishes. A technician still has to see the door before anyone names a price.
+            </p>
+            <Link to="/contact" className="hm-btn hm-btn-signal">
+              Ask about your door
+            </Link>
+          </div>
+          <div className="hm-faq-list">
+            {faqs.map((item, i) => {
+              const on = open === i;
+              return (
+                <div key={item.q} className={on ? "is-open" : undefined}>
+                  <button type="button" aria-expanded={on} onClick={() => setOpen(on ? null : i)}>
+                    <span className="hm-faq-icon">
+                      <item.Icon size={16} aria-hidden="true" />
+                    </span>
+                    {item.q}
+                  </button>
+                  {on && <p>{item.a}</p>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </section>
   );

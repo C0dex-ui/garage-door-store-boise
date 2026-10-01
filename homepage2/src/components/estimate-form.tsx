@@ -1,6 +1,12 @@
 import { useState } from "react";
+import { Mail, MapPin, Phone, User } from "lucide-react";
 import { z } from "zod";
 import { EMAIL, PHONE_DISPLAY, PHONE_TEL, services } from "@/data/site";
+
+function FieldIcon({ name }: { name: keyof typeof fieldIcons }) {
+  const Icon = fieldIcons[name];
+  return <Icon size={14} aria-hidden="true" />;
+}
 
 const schema = z.object({
   name: z.string().trim().min(2, "Enter your name."),
@@ -22,7 +28,9 @@ const empty: Fields = {
   message: "",
 };
 
-export function EstimateForm({ id = "estimate" }: { id?: string }) {
+const fieldIcons = { name: User, phone: Phone, email: Mail, city: MapPin } as const;
+
+export function EstimateForm({ id = "estimate", compact = false }: { id?: string; compact?: boolean }) {
   const [values, setValues] = useState<Fields>(empty);
   const [errors, setErrors] = useState<Partial<Record<keyof Fields, string>>>({});
   const [status, setStatus] = useState<"idle" | "ready">("idle");
@@ -80,14 +88,16 @@ export function EstimateForm({ id = "estimate" }: { id?: string }) {
   }
 
   return (
-    <form id={id} className="form" onSubmit={onSubmit} noValidate>
-      <p className="kicker">Estimate request</p>
-      <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)" }}>Tell us about the opening.</h2>
-      <p className="form-note">
-        There is no hosted form inbox connected yet. Submitting opens your email app with a message addressed
-        to {EMAIL}. Nothing is stored on this site. If mail does not open, call{" "}
-        <a href={PHONE_TEL}>{PHONE_DISPLAY}</a>.
-      </p>
+    <form id={id} className={compact ? "form is-compact" : "form"} onSubmit={onSubmit} noValidate>
+      {compact ? null : <p className="kicker">Estimate request</p>}
+      {compact ? null : <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)" }}>Tell us about the opening.</h2>}
+      {compact ? null : (
+        <p className="form-note is-wide">
+          There is no hosted form inbox connected yet. Submitting opens your email app with a message addressed
+          to {EMAIL}. Nothing is stored on this site. If mail does not open, call{" "}
+          <a href={PHONE_TEL}>{PHONE_DISPLAY}</a>.
+        </p>
+      )}
       {(
         [
           ["name", "Name", "text"],
@@ -97,7 +107,10 @@ export function EstimateForm({ id = "estimate" }: { id?: string }) {
         ] as const
       ).map(([key, label, type]) => (
         <div className="field" key={key}>
-          <label htmlFor={`${id}-${key}`}>{label}</label>
+          <label htmlFor={`${id}-${key}`}>
+            {compact ? <FieldIcon name={key} /> : null}
+            {label}
+          </label>
           <input
             id={`${id}-${key}`}
             name={key}
@@ -109,7 +122,7 @@ export function EstimateForm({ id = "estimate" }: { id?: string }) {
           {errors[key] && <span className="err">{errors[key]}</span>}
         </div>
       ))}
-      <div className="field">
+      <div className="field is-wide">
         <label htmlFor={`${id}-service`}>Service</label>
         <select
           id={`${id}-service`}
@@ -123,7 +136,7 @@ export function EstimateForm({ id = "estimate" }: { id?: string }) {
           <option>Not sure yet</option>
         </select>
       </div>
-      <div className="field">
+      <div className="field is-wide">
         <label htmlFor={`${id}-message`}>What is going on</label>
         <textarea
           id={`${id}-message`}
@@ -133,7 +146,7 @@ export function EstimateForm({ id = "estimate" }: { id?: string }) {
         />
         {errors.message && <span className="err">{errors.message}</span>}
       </div>
-      <div className="form-actions">
+      <div className="form-actions is-wide">
         <button className="btn btn-signal" type="submit">
           Email this request
         </button>
@@ -145,9 +158,14 @@ export function EstimateForm({ id = "estimate" }: { id?: string }) {
         </a>
       </div>
       {status === "ready" && (
-        <p className="form-note" role="status">
+        <p className="form-note is-wide" role="status">
           Your email app should open a draft to {EMAIL}. This page did not submit the request to a server, and
           it has not been booked. If the draft did not open, use Copy request or call {PHONE_DISPLAY}.
+        </p>
+      )}
+      {compact && (
+        <p className="form-note is-wide">
+          Opens an email to {EMAIL}. Nothing is stored on this site.
         </p>
       )}
     </form>
