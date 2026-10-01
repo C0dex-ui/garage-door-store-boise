@@ -57,7 +57,7 @@ export type DoorStyle = {
 export const doorStyles: DoorStyle[] = [
   {
     slug: "wood-grain",
-    title: "Wood Grain",
+    title: "Wood Garage Doors",
     number: "01",
     kicker: "Texture",
     summary: "Grain, warmth, and a door that reads as part of the architecture.",
@@ -113,7 +113,7 @@ export const doorStyles: DoorStyle[] = [
   },
   {
     slug: "carriage",
-    title: "Carriage Doors",
+    title: "Carriage Garage Doors",
     number: "05",
     kicker: "Heritage",
     summary: "The swing-door silhouette, built as a sectional that actually lifts.",
@@ -154,8 +154,32 @@ export const doorStyles: DoorStyle[] = [
     ],
   },
   {
+    slug: "steel",
+    title: "Steel Garage Doors",
+    number: "09",
+    kicker: "Steel",
+    summary: "Durable, insulated steel doors, with the price given up front.",
+    body: "The steel doors page says a new door adds beauty and function, with a sleek look and more safety. Steel is described as a top choice because it is durable and can lower the energy bill. The shop says steel insulates well, runs smooth and quiet, and can be customized. Technicians are described as trained, with at least five years in the industry, and prices are given up front with no overcharge.",
+    images: [
+      { src: "/media/steel.webp", alt: "Garage door from the Garage Door Store Boise gallery" },
+      { src: "/media/trad-2.webp", alt: "Another residential garage door from the company gallery" },
+    ],
+  },
+  {
+    slug: "standard",
+    title: "Standard Garage Doors",
+    number: "10",
+    kicker: "Standard",
+    summary: "Non-insulated, vinyl-backed, and double-steel options.",
+    body: "The shop says it repairs, maintains, and installs standard garage doors. Those doors are offered as non-insulated, vinyl-backed, and double steel, so the look and the build can change without leaving the standard line. Their page says a new door is one of the higher returns on a house, and that the garage door is usually about half of the front. Prices are given up front, with no add-ons or up-charges.",
+    images: [
+      { src: "/media/trad-1.webp", alt: "Traditional raised-panel garage door from the company gallery" },
+      { src: "/media/trad-4.webp", alt: "Traditional residential garage door from the company gallery" },
+    ],
+  },
+  {
     slug: "commercial",
-    title: "Commercial",
+    title: "Commercial Garage Doors",
     number: "08",
     kicker: "Work",
     summary: "Sectional and rolling doors for shops, bays, and taller openings.",
@@ -169,7 +193,9 @@ export const doorStyles: DoorStyle[] = [
   },
 ];
 
-export const residentialStyles = doorStyles.filter((s) => s.slug !== "commercial" && s.slug !== "custom");
+export const residentialStyles = doorStyles.filter((s) =>
+  ["wood-grain", "planked", "modern", "glass", "carriage", "traditional"].includes(s.slug),
+);
 
 export type Service = {
   id: string;
@@ -414,35 +440,34 @@ export type NavItem = {
 };
 
 export const navItems: NavItem[] = [
+  { label: "Home", href: "/" },
   {
-    label: "Garage Doors",
+    label: "About Us",
+    href: "/about",
+    links: [{ label: "Our Team", href: "/about#team" }],
+  },
+  {
+    label: "Services",
     href: "/doors",
-    links: doorStyles
-      .filter((s) => s.slug !== "commercial")
-      .map((s) => ({ label: s.title, href: `/doors/${s.slug}`, note: s.kicker })),
-  },
-  {
-    label: "Repair & Maintenance",
-    href: "/repair",
     links: [
-      { label: "Garage door repair", href: "/repair", note: "01" },
-      { label: "Spring replacement", href: "/repair#springs", note: "02" },
-      { label: "Openers & remotes", href: "/repair#openers", note: "03" },
-      { label: "Tune-ups", href: "/repair#maintenance", note: "04" },
+      { label: "Steel Garage Doors", href: "/doors/steel" },
+      { label: "Carriage Garage Doors", href: "/doors/carriage" },
+      { label: "Wood Garage Doors", href: "/doors/wood-grain" },
+      { label: "Standard Garage Doors", href: "/doors/standard" },
+      { label: "Commercial Garage Doors", href: "/commercial" },
+      { label: "Garage Door Installation", href: "/installation" },
+      { label: "Garage Door Repair", href: "/repair" },
+      { label: "Spring Replacement", href: "/repair#springs" },
+      { label: "Garage Door Openers", href: "/repair#openers" },
     ],
   },
   {
-    label: "Installation",
-    href: "/installation",
-    links: [
-      { label: "New door installation", href: "/installation" },
-      { label: "Carriage & standard", href: "/installation#styles" },
-      { label: "Request an estimate", href: "/contact" },
-    ],
+    label: "Gallery",
+    href: "/work",
+    links: [{ label: "Recent Projects", href: "/work#recent" }],
   },
-  { label: "Commercial", href: "/commercial" },
-  { label: "Our Work", href: "/work" },
-  { label: "About", href: "/about" },
+  { label: "Blog", href: "/blog" },
+  { label: "Testimonials", href: "/testimonials" },
   { label: "Contact", href: "/contact" },
 ];
 

@@ -10,7 +10,7 @@ import {
   offers,
   PHONE_DISPLAY,
   PHONE_TEL,
-  residentialStyles,
+  reviews,
   services,
   teamNames,
   type DoorStyle,
@@ -108,8 +108,8 @@ export function RepairPage() {
   return (
     <main>
       <PageHero
-        kicker="Repair & maintenance"
-        title="Fix it before you replace it. Replace it when that is the honest call."
+        kicker="Garage Door Repair Boise"
+        title="Garage door repair in Boise."
         lede="Repair, springs, openers, and tune-ups — using the company’s own descriptions and published prices."
       />
       <div className="page-main">
@@ -186,8 +186,8 @@ export function InstallationPage() {
   return (
     <main>
       <PageHero
-        kicker="Installation"
-        title="Specified for the house. Not dropped in from a catalog photo."
+        kicker="Garage Door Installation Boise"
+        title="Garage door installation."
         lede="New residential doors, including standard and carriage styles, with the opener and springs considered together."
       />
       <div className="page-main">
@@ -208,7 +208,9 @@ export function InstallationPage() {
         <div id="styles">
           <p className="kicker">Styles they show</p>
           <ul className="city-index">
-            {residentialStyles.map((style) => (
+            {doorStyles
+              .filter((style) => style.slug !== "commercial")
+              .map((style) => (
               <li key={style.slug}>
                 <Link to="/doors/$slug" params={{ slug: style.slug }}>
                   {style.title}
@@ -236,8 +238,8 @@ export function CommercialPage() {
   return (
     <main>
       <PageHero
-        kicker="Commercial"
-        title="Doors that work a shift, not just a driveway."
+        kicker="Commercial Garage Doors Boise"
+        title="Commercial garage doors."
         lede="Insulated and non-insulated commercial doors, taller openings, and operators built for cycle count."
       />
       <div className="page-main">
@@ -276,11 +278,11 @@ export function WorkPage() {
   return (
     <main>
       <PageHero
-        kicker="Our work"
-        title="Built around your home."
-        lede="The gallery, filtered the way the company already groups it. Open a photograph for a closer look. Project addresses are not published, so they are not shown."
+        kicker="Gallery"
+        title="Gallery"
+        lede="Photographs grouped the way the shop already sorts them: wood grain, planked, modern, glass, carriage, traditional, custom, and commercial. Recent projects use these same pictures. Addresses are not published, so they are not shown."
       />
-      <div className="page-main">
+      <div className="page-main" id="recent">
         <GalleryBrowser />
       </div>
     </main>
@@ -291,8 +293,8 @@ export function AboutPage() {
   return (
     <main>
       <PageHero
-        kicker="About"
-        title="Good work. Local people. Built on experience."
+        kicker="About Us"
+        title="About Garage Door Store Boise, Inc."
         lede="Family-owned, locally operated, and on garage doors for over 30 years — the claims the company publishes about itself."
       />
       <div className="page-main">
@@ -306,7 +308,7 @@ export function AboutPage() {
             <p>
               The repair page adds that technicians are available 24/7 and that the company is licensed, bonded, insured, and a BBB member in good standing. The Our Team page lists six names and no biographies. The group photo shows the crew; faces are not matched to names here.
             </p>
-            <ul className="roster">
+            <ul className="roster" id="team">
               {teamNames.map((name) => (
                 <li key={name}>{name}</li>
               ))}
@@ -350,7 +352,7 @@ export function ContactPage() {
     <main>
       <PageHero
         kicker="Contact"
-        title="Call, or send the estimate from your own email."
+        title="Contact"
         lede="208-514-2871 is the published number. The form opens a draft to the mailbox printed on their site. It does not pretend a job is booked."
       />
       <div className="page-main">
@@ -375,6 +377,94 @@ export function ContactPage() {
               <iframe title="Map of Garage Door Store Boise" src={MAPS_EMBED} loading="lazy" />
             </div>
           </div>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+export function BlogPage() {
+  const posts = [
+    {
+      title: "DIY or Professional? Should You Fix Your Garage Door Yourself?",
+      href: "https://garagedoorstoreboise.com/diy-or-professional-should-you-fix-your-garage-door-yourself/",
+      text: "Garage door repairs are a common necessity for homeowners. Deciding whether to tackle these repairs yourself or hire a professional is crucial for both your safety and the longevity of your garage door. The article looks at the risks of DIY Boise garage door repair.",
+    },
+    {
+      title: "Custom Wood Garage Doors in Eagle, Idaho: Style, Durability, and Smart Upgrades for Year-Round Performance",
+      href: "https://garagedoorstoreboise.com/custom-wood-garage-doors-in-eagle-idaho-style-durability-and-smart-upgrades-for-year-round-performance/",
+      text: "A custom wood garage door can change the look of a home in Eagle, especially on craftsman, farmhouse, ranch, and modern-rustic houses. The shop’s post says wood doors are not a set-it-and-forget-it choice, and that they have to be built and maintained correctly.",
+    },
+    {
+      title: "Garage Door Repair in Caldwell, ID: A Homeowner’s Guide to Safer, Quieter, More Reliable Doors",
+      href: "https://garagedoorstoreboise.com/garage-door-repair-in-caldwell-id-a-homeowners-guide-to-safer-quieter-more-reliable-doors-2/",
+      text: "The post calls the garage door the largest moving part of the home, and says doors in Caldwell work harder than people expect. It is written as a guide to what is normal and what is a warning sign.",
+    },
+    {
+      title: "Garage Door Openers in Boise: How to Choose the Right One (and Avoid Costly Repairs)",
+      href: "https://garagedoorstoreboise.com/garage-door-openers-in-boise-how-to-choose-the-right-one-and-avoid-costly-repairs/",
+      text: "In Boise, the opener is described as a daily-use machine that has to work through temperature swings, dusty summers, and winter cold. The post is about choosing an opener that stays quiet and reliable.",
+    },
+    {
+      title: "Choosing Garage Door Openers in Meridian, ID: Quiet Operation, Smart Features, and Safety Must-Haves",
+      href: "https://garagedoorstoreboise.com/choosing-garage-door-openers-in-meridian-id-quiet-operation-smart-features-and-safety-must-haves/",
+      text: "A Meridian guide from the shop’s blog about quiet operation, smart features, and the safety items they want on an opener.",
+    },
+    {
+      title: "Garage Door Openers in Caldwell, Idaho: A Practical Guide to Choosing the Right Opener (and Keeping It Reliable)",
+      href: "https://garagedoorstoreboise.com/garage-door-openers-in-caldwell-idaho-a-practical-guide-to-choosing-the-right-opener-and-keeping-it-reliable/",
+      text: "A Caldwell guide from the same blog: how to choose an opener and keep it reliable.",
+    },
+  ];
+  return (
+    <main>
+      <PageHero
+        kicker="Blog"
+        title="From the shop’s blog."
+        lede="These are the posts published on garagedoorstoreboise.com. Each link opens the original article."
+      />
+      <div className="page-main">
+        <div className="stack">
+          {posts.map((post) => (
+            <article key={post.href} className="prose">
+              <h2>{post.title}</h2>
+              <p>{post.text}</p>
+              <a href={post.href}>Read the full post</a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </main>
+  );
+}
+
+export function TestimonialsPage() {
+  return (
+    <main>
+      <PageHero
+        kicker="Testimonials"
+        title="Testimonials"
+        lede="Reviews the shop publishes, including the Google and Housecall Pro comments already shown on this site. The old testimonials page points readers to those same sources."
+      />
+      <div className="page-main">
+        <div className="stack">
+          {reviews.map((review) => (
+            <blockquote key={review.name} className="prose">
+              <p>{review.text}</p>
+              <p>
+                <strong>{review.name}</strong>
+                {"place" in review && review.place ? ` · ${review.place}` : ""} · {review.stars} stars
+              </p>
+            </blockquote>
+          ))}
+        </div>
+        <div className="row-actions">
+          <a className="btn btn-ghost" href="https://garagedoorstoreboise.com/testimonials/">
+            Testimonials on the current site
+          </a>
+          <a className="btn btn-ghost" href="https://client.housecallpro.com/reviews/Garage-Door-Store-Boise/0a5ec8c7-7320-4741-8cd3-adc1e67e97a0/">
+            Housecall Pro reviews
+          </a>
         </div>
       </div>
     </main>

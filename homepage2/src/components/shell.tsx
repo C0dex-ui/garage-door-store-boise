@@ -22,6 +22,29 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
 
   useEffect(() => {
+    const root = document.getElementById("content");
+    if (!root) return;
+    const nodes = [...root.querySelectorAll<HTMLElement>(".hm-band, .hm-finale, .page-main")];
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      nodes.forEach((node) => node.classList.add("is-shown"));
+      return;
+    }
+    const seen = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.classList.add("is-shown");
+          seen.unobserve(entry.target);
+        }
+      },
+      { threshold: 0, rootMargin: "0px 0px -10% 0px" },
+    );
+    nodes.forEach((node) => seen.observe(node));
+    return () => seen.disconnect();
+  }, [path]);
+
+  useEffect(() => {
     setMobile(false);
     setOpenMenu(null);
   }, [path]);
@@ -57,7 +80,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const menu = [{ label: "Home", href: "/" }, ...navItems, { label: "FAQ", href: "/#questions" }];
+  const menu = navItems;
 
   return (
     <>
@@ -78,7 +101,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
         <div className="header-progress" style={{ width: `${progress}%` }} />
         <div className="header-inner">
           <Link to="/" className="brand" aria-label="Garage Door Store Boise, home">
-            <img src="/media/logo.png" alt="" width={133} height={38} />
+            <img src="/media/logo.png" alt="" width={210} height={62} />
             <span className="brand-type">
               <strong>Garage Door Store</strong>
               <span>Boise</span>
@@ -123,18 +146,19 @@ export function Shell({ children }: { children: React.ReactNode }) {
             ))}
           </nav>
           <div className="header-actions">
-            <a className="phone-link" href={PHONE_TEL}>
-              <em>Call</em>
-              {PHONE_DISPLAY}
-            </a>
+            <div className="header-cta">
+              <Link to="/contact" className="btn btn-signal">
+                Get a free estimate
+              </Link>
+              <a className="phone-link" href={PHONE_TEL}>
+                {PHONE_DISPLAY}
+              </a>
+            </div>
             <a className="icon-call" href={PHONE_TEL} aria-label={`Call ${PHONE_DISPLAY}`}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M6.5 3.5h3L11 8l-2 1.5a12 12 0 0 0 5.5 5.5L16 13l4.5 1.5v3A2 2 0 0 1 18.5 19 15 15 0 0 1 5 5.5a2 2 0 0 1 1.5-2Z" stroke="currentColor" strokeWidth="1.4" />
               </svg>
             </a>
-            <Link to="/contact" className="btn btn-signal">
-              Get a free estimate
-            </Link>
             <button
               className="burger"
               aria-label={mobile ? "Close menu" : "Open menu"}
@@ -206,14 +230,15 @@ export function Shell({ children }: { children: React.ReactNode }) {
           <div>
             <h3>Our work</h3>
             <ul>
-              <li><Link to="/doors">Door styles</Link></li>
+              <li><Link to="/about">About Us</Link></li>
+              <li><a href="/about#team">Our Team</a></li>
+              <li><Link to="/doors">Services</Link></li>
               <li><Link to="/repair">Repair</Link></li>
               <li><Link to="/installation">Installation</Link></li>
               <li><Link to="/commercial">Commercial</Link></li>
-              <li><Link to="/work">Projects</Link></li>
-              <li><a href="/#reviews">Reviews</a></li>
-              <li><a href="/#prices">Published prices</a></li>
-              <li><Link to="/about">About</Link></li>
+              <li><Link to="/work">Gallery</Link></li>
+              <li><Link to="/blog">Blog</Link></li>
+              <li><Link to="/testimonials">Testimonials</Link></li>
               <li><Link to="/contact">Contact</Link></li>
             </ul>
           </div>

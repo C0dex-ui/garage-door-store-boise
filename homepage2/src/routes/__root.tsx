@@ -14,6 +14,7 @@ export const Route = createRootRoute({
       { title: APP_NAME },
       { name: "description", content: "Garage doors, repair, and installation for Boise and the Treasure Valley. Family-owned Garage Door Store Boise." },
       { name: "theme-color", content: "#171918" },
+      { httpEquiv: "Permissions-Policy", content: "compute-pressure=*" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ADDRESS_CITY,
   ADDRESS_LINE,
@@ -94,36 +94,91 @@ export function HomePage() {
   );
 }
 
+const heroClips = [
+  { src: "/media/hero-navy.mp4", label: "Carriage wood" },
+  { src: "/media/hero-wood.mp4", label: "Wood and windows" },
+  { src: "/media/hero-angle.mp4", label: "Three-quarter view" },
+  { src: "/media/hero-carriage.mp4", label: "Carriage pair" },
+  { src: "/media/hero-bay.mp4", label: "Commercial bay" },
+];
+
 function Hero() {
+  const [index, setIndex] = useState(0);
+  const [play, setPlay] = useState(false);
+  const reel = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setPlay(!reduce);
+  }, []);
+
+  useEffect(() => {
+    if (!play) return;
+    const videos = reel.current?.querySelectorAll("video");
+    if (!videos) return;
+    videos.forEach((video, i) => {
+      if (i === index) {
+        video.currentTime = 0;
+        void video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    });
+  }, [index, play]);
+
   return (
     <section className="hm-hero" aria-label="Introduction">
       <div className="hm-hero-copy">
-        <p className="hm-kicker">Home · Treasure Valley · Project 01</p>
+        <span className="hm-hero-mark" aria-hidden="true" />
+        <p className="hm-kicker">Boise · Treasure Valley</p>
         <h1>
           Your home.
           <br />
           Your statement.
           <br />
-          Your garage door.
+          <em>Your garage door.</em>
         </h1>
         <p className="hm-lead">
           Thoughtfully selected garage doors, dependable repairs, and professional installation for Boise and the Treasure Valley.
         </p>
+        <ul className="hm-hero-spec">
+          <li>Family owned</li>
+          <li>30+ years</li>
+          <li>Homes and commercial</li>
+        </ul>
         <div className="hm-actions">
           <Link to="/contact" className="hm-btn hm-btn-signal">
             Get a free estimate
           </Link>
-          <a className="hm-btn hm-btn-ghost" href="#collection">
+          <a className="hm-btn hm-btn-line" href="#collection">
             Explore the collection
           </a>
         </div>
       </div>
       <figure className="hm-hero-photo">
-        <img
-          src="/media/hero-blue-house.webp"
-          alt="Wood-tone garage doors on a blue home from the company gallery"
-        />
-        <figcaption>Carriage wood · Local install</figcaption>
+        <div className="hm-hero-reel" ref={reel}>
+          {play ? (
+            heroClips.map((clip, i) => (
+              <video
+                key={clip.src}
+                className={i === index ? "is-on" : undefined}
+                src={clip.src}
+                muted
+                playsInline
+                aria-hidden="true"
+                preload={i === 0 ? "auto" : "metadata"}
+                poster="/media/hero-blue-house.webp"
+                onEnded={() => setIndex((n) => (n + 1) % heroClips.length)}
+              />
+            ))
+          ) : (
+            <img src="/media/hero-blue-house.webp" alt="Wood-tone garage doors on a blue home from the company gallery" />
+          )}
+        </div>
+        <figcaption>
+          <strong>{String((play ? index : 0) + 1).padStart(2, "0")}</strong>
+          <span>{play ? heroClips[index].label : "Carriage wood"}</span>
+        </figcaption>
       </figure>
     </section>
   );
@@ -132,28 +187,34 @@ function Hero() {
 function Collection() {
   return (
     <section className="hm-band" id="collection" aria-labelledby="collection-title">
-      <div className="hm-wrap">
-        <div className="hm-split-head">
-          <div>
-            <p className="hm-kicker">The collection</p>
+      <div className="hm-collection-head">
+        <p className="hm-kicker">The collection</p>
+        <div className="hm-collection-row">
+          <div className="hm-collection-copy">
             <h2 id="collection-title">Not just a door. The finishing touch.</h2>
+            <p className="hm-note">
+              Six looks from the shop’s own gallery. Tap a style to see the photographs and ask for that door.
+            </p>
           </div>
-          <p className="hm-note">
-            Six looks from the shop’s own gallery. Tap a style to see the photographs and ask for that door.
-          </p>
+          <Link to="/contact" className="hm-btn hm-btn-signal">
+            Get a free estimate
+          </Link>
         </div>
-        <div className="hm-styles">
+      </div>
+      <div className="hm-styles">
           {residentialStyles.map((style) => (
             <Link key={style.slug} to="/doors/$slug" params={{ slug: style.slug }} className="hm-style">
               <img src={style.images[0].src} alt={style.images[0].alt} />
               <span className="hm-style-no">{style.number}</span>
               <span className="hm-style-meta">
-                <strong>{style.title}</strong>
-                <em>View style</em>
+                <strong>
+                  {style.slug === "wood-grain" ? "Wood grain" : style.slug === "carriage" ? "Carriage doors" : style.title}
+                </strong>
+                <span className="hm-style-desc">{style.summary}</span>
+                <em>Explore style →</em>
               </span>
             </Link>
           ))}
-        </div>
       </div>
     </section>
   );
@@ -184,7 +245,7 @@ function Services() {
           </div>
         </div>
         <figure className="hm-service-photo">
-          <img src={current.image} alt={current.imageAlt} />
+          <img key={current.image} className="hm-swap" src={current.image} alt={current.imageAlt} />
           <figcaption>
             <p>{current.summary}</p>
             <a href={current.href} className="hm-btn hm-btn-signal">
@@ -218,7 +279,7 @@ function Symptoms() {
             </button>
           ))}
         </div>
-        <article className="hm-guide" aria-live="polite">
+        <article className="hm-guide hm-swap" key={current.id} aria-live="polite">
           <p className="hm-kicker">General guidance</p>
           <h3>{current.title.replace(/\.$/, "")}</h3>
           <p>{current.guidance}</p>
@@ -342,7 +403,7 @@ function Reviews() {
             Google · published reviews
           </a>
         </div>
-        <blockquote className="hm-quote">{quote.text}</blockquote>
+        <blockquote className="hm-quote hm-swap" key={quote.name + quote.text.slice(0, 24)}>{quote.text}</blockquote>
         <div className="hm-quote-bar">
           <p>
             {quote.name}
@@ -383,7 +444,7 @@ function Portfolio() {
         </div>
         <div className={filter === "all" ? "hm-folio" : "hm-folio is-filtered"}>
           {visible.map((shot) => (
-            <figure key={shot.src} className={filter === "all" && shot.span ? `is-${shot.span}` : undefined}>
+            <figure key={shot.src} className={[filter === "all" && shot.span ? `is-${shot.span}` : "", "hm-swap"].filter(Boolean).join(" ")}>
               <img src={shot.src} alt={shot.alt} />
               <figcaption>{shot.label}</figcaption>
             </figure>

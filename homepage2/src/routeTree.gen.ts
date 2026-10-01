@@ -11,12 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as BlogRouteImport } from './routes/blog'
 import { Route as CommercialRouteImport } from './routes/commercial'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DoorsRouteImport } from './routes/doors'
 import { Route as InstallationRouteImport } from './routes/installation'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RepairRouteImport } from './routes/repair'
+import { Route as TestimonialsRouteImport } from './routes/testimonials'
 import { Route as WorkRouteImport } from './routes/work'
 import { Route as DoorsIndexRouteImport } from './routes/doors.index'
 import { Route as DoorsSlugRouteImport } from './routes/doors.$slug'
@@ -29,6 +31,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CommercialRoute = CommercialRouteImport.update({
@@ -61,6 +68,11 @@ const RepairRoute = RepairRouteImport.update({
   path: '/repair',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TestimonialsRoute = TestimonialsRouteImport.update({
+  id: '/testimonials',
+  path: '/testimonials',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WorkRoute = WorkRouteImport.update({
   id: '/work',
   path: '/work',
@@ -80,12 +92,14 @@ const DoorsSlugRoute = DoorsSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/blog': typeof BlogRoute
   '/commercial': typeof CommercialRoute
   '/contact': typeof ContactRoute
   '/doors': typeof DoorsRouteWithChildren
   '/installation': typeof InstallationRoute
   '/privacy': typeof PrivacyRoute
   '/repair': typeof RepairRoute
+  '/testimonials': typeof TestimonialsRoute
   '/work': typeof WorkRoute
   '/doors/$slug': typeof DoorsSlugRoute
   '/doors/': typeof DoorsIndexRoute
@@ -93,11 +107,13 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/blog': typeof BlogRoute
   '/commercial': typeof CommercialRoute
   '/contact': typeof ContactRoute
   '/installation': typeof InstallationRoute
   '/privacy': typeof PrivacyRoute
   '/repair': typeof RepairRoute
+  '/testimonials': typeof TestimonialsRoute
   '/work': typeof WorkRoute
   '/doors/$slug': typeof DoorsSlugRoute
   '/doors': typeof DoorsIndexRoute
@@ -106,12 +122,14 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/blog': typeof BlogRoute
   '/commercial': typeof CommercialRoute
   '/contact': typeof ContactRoute
   '/doors': typeof DoorsRouteWithChildren
   '/installation': typeof InstallationRoute
   '/privacy': typeof PrivacyRoute
   '/repair': typeof RepairRoute
+  '/testimonials': typeof TestimonialsRoute
   '/work': typeof WorkRoute
   '/doors/$slug': typeof DoorsSlugRoute
   '/doors/': typeof DoorsIndexRoute
@@ -121,12 +139,14 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/blog'
     | '/commercial'
     | '/contact'
     | '/doors'
     | '/installation'
     | '/privacy'
     | '/repair'
+    | '/testimonials'
     | '/work'
     | '/doors/$slug'
     | '/doors/'
@@ -134,11 +154,13 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/blog'
     | '/commercial'
     | '/contact'
     | '/installation'
     | '/privacy'
     | '/repair'
+    | '/testimonials'
     | '/work'
     | '/doors/$slug'
     | '/doors'
@@ -146,12 +168,14 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/blog'
     | '/commercial'
     | '/contact'
     | '/doors'
     | '/installation'
     | '/privacy'
     | '/repair'
+    | '/testimonials'
     | '/work'
     | '/doors/$slug'
     | '/doors/'
@@ -160,12 +184,14 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  BlogRoute: typeof BlogRoute
   CommercialRoute: typeof CommercialRoute
   ContactRoute: typeof ContactRoute
   DoorsRoute: typeof DoorsRouteWithChildren
   InstallationRoute: typeof InstallationRoute
   PrivacyRoute: typeof PrivacyRoute
   RepairRoute: typeof RepairRoute
+  TestimonialsRoute: typeof TestimonialsRoute
   WorkRoute: typeof WorkRoute
 }
 
@@ -183,6 +209,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/commercial': {
@@ -227,6 +260,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RepairRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/testimonials': {
+      id: '/testimonials'
+      path: '/testimonials'
+      fullPath: '/testimonials'
+      preLoaderRoute: typeof TestimonialsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/work': {
       id: '/work'
       path: '/work'
@@ -266,12 +306,14 @@ const DoorsRouteWithChildren = DoorsRoute._addFileChildren(DoorsRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  BlogRoute: BlogRoute,
   CommercialRoute: CommercialRoute,
   ContactRoute: ContactRoute,
   DoorsRoute: DoorsRouteWithChildren,
   InstallationRoute: InstallationRoute,
   PrivacyRoute: PrivacyRoute,
   RepairRoute: RepairRoute,
+  TestimonialsRoute: TestimonialsRoute,
   WorkRoute: WorkRoute,
 }
 export const routeTree = rootRouteImport
