@@ -7,7 +7,7 @@
   --color-red-deep: #b10500;
   --color-paper: #f3f1ec;
   --color-card: #ffffff;
-  --color-muted: #5c5854;
+  --color-muted: #3f3c38;
   --color-silver: #c5c8ce;
   --color-line: #e5e0d8;
   --font-display: "Oswald", ui-sans-serif, sans-serif;
@@ -70,11 +70,26 @@
 
 .fade-section {
   opacity: 0;
-  transition: opacity 700ms ease;
+  transition: opacity 800ms ease;
 }
 
 .fade-section.is-in {
   opacity: 1;
+}
+
+.fade-section.is-in :is(h1, h2, h3, p) {
+  animation: fade-lower 0.7s ease both;
+}
+
+@keyframes fade-lower {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .hover-lift {
@@ -184,6 +199,101 @@
   transform: scale(1.08);
 }
 
+.coupon-splash {
+  position: absolute;
+  left: 8%;
+  top: 42%;
+  z-index: 0;
+  display: none;
+  width: 210px;
+  height: 160px;
+  background: #e10600;
+  border-radius: 58% 42% 62% 38% / 46% 58% 42% 54%;
+  animation: ink-splash 0.55s cubic-bezier(0.16, 0.84, 0.3, 1.1) both;
+}
+
+@media (min-width: 768px) {
+  .coupon-splash {
+    display: block;
+  }
+}
+
+.coupon-splash::before,
+.coupon-splash::after {
+  content: "";
+  position: absolute;
+  background: #e10600;
+}
+
+.coupon-splash::before {
+  width: 72px;
+  height: 52px;
+  right: -34px;
+  top: -16px;
+  border-radius: 62% 38% 48% 52%;
+}
+
+.coupon-splash::after {
+  width: 34px;
+  height: 26px;
+  left: -18px;
+  bottom: 8px;
+  border-radius: 50% 50% 40% 60%;
+}
+
+.coupon-splash-right {
+  left: auto;
+  right: 6%;
+  top: 58%;
+  width: 160px;
+  height: 120px;
+  animation-delay: 80ms;
+}
+
+.coupon-ticket {
+  position: relative;
+  z-index: 1;
+  border: 2px dashed #e10600;
+  background: #fffdf8;
+  box-shadow: 0 12px 28px rgb(18 18 18 / 0.08);
+}
+
+.coupon-ticket::before,
+.coupon-ticket::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  margin-top: -11px;
+  border-radius: 999px;
+  background: var(--color-paper);
+}
+
+.coupon-ticket::before {
+  left: -13px;
+}
+
+.coupon-ticket::after {
+  right: -13px;
+}
+
+.coupon-ticket.is-featured {
+  background: #fff;
+  box-shadow: 0 16px 32px rgb(225 6 0 / 0.18);
+}
+
+@keyframes ink-splash {
+  from {
+    opacity: 0;
+    transform: scale(0.35) rotate(-12deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -192,13 +302,18 @@
   .kenburns,
   .hero-copy,
   .marquee-track,
-  .stamp {
+  .stamp,
+  .coupon-splash {
     animation: none;
   }
 
   .fade-section {
     opacity: 1;
     transition: none;
+  }
+
+  .fade-section.is-in :is(h1, h2, h3, p) {
+    animation: none;
   }
 
   .tap:active {

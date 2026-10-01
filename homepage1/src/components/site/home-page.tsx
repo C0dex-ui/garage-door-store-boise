@@ -81,6 +81,31 @@ function SocialIcon({ label }: { label: string }) {
   );
 }
 
+function SketchIcon({ name, className = "size-9 shrink-0 text-white/90" }: { name: "years" | "clock" | "shield" | "truck" | "door" | "opener" | "spring" | "track" | "guide" | "tech" | "craft" | "home"; className?: string }) {
+  const pen = { fill: "none", stroke: "currentColor", strokeWidth: 1.6, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+  return (
+    <svg viewBox="0 0 36 36" className={className} aria-hidden>
+      {name === "years" ? <path {...pen} d="M8.4 7.2h19.2M10 7.4v5.1c.2 5.6 3.4 9.2 8 10.8 4.5-1.5 7.7-5 8-10.6V7.6L18 11.1 10 7.4z" /> : null}
+      {name === "clock" ? (
+        <>
+          <path {...pen} d="M18 6.8c6.3.2 11 5.2 10.8 11.4S24.2 29.2 18 29.2 7 24.4 7.2 18.2 11.8 6.6 18 6.8z" />
+          <path {...pen} d="M18 12.2v6.4l4.3 2.6" />
+        </>
+      ) : null}
+      {name === "shield" ? <path {...pen} d="M18 6.4 28.2 10v7.6c-.2 6.2-4.2 10.2-10.2 12.2C12 27.8 8 23.8 7.8 17.6V10L18 6.4z" /> : null}
+      {name === "truck" ? <path {...pen} d="M5.8 12.2h14.2v9.4H5.8zM20 15.4h5.2l3.6 3.4v2.8H20M10.2 24.2a2.2 2.2 0 1 1 0 .1M24.4 24.2a2.2 2.2 0 1 1 0 .1" /> : null}
+      {name === "door" ? <path {...pen} d="M9 7.2h18v21.4H9zM9 13.4h18M15.2 13.4v15.2M21 13.4v15.2M16.6 20.6h2.6" /> : null}
+      {name === "opener" ? <path {...pen} d="M11 13.2h14.2v11.4H11zM14.2 13.2V9.2h7.6v4M18 16.8v3.2" /> : null}
+      {name === "spring" ? <path {...pen} d="M11 7.4c5.2.2 7.2 2.4 7.2 4.6S15.6 16 12 16.4s-6.2 2.4-4.2 5.2 6.4 3.2 10.6 2.6 7.2 2 6.4 4.6" /> : null}
+      {name === "track" ? <path {...pen} d="M10 7.2v21.2M16.4 7.4v8.2l7.2 3.6v9.2M16.4 15.6h12.2" /> : null}
+      {name === "guide" ? <path {...pen} d="M8 8.6h19.2v12.4H15.2L9.4 26v-5H8z" /> : null}
+      {name === "tech" ? <path {...pen} d="M18 7.2a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4zM10.4 27.4c.8-5.2 3.6-7.6 7.6-7.6s6.8 2.4 7.6 7.6" /> : null}
+      {name === "craft" ? <path {...pen} d="M13.2 22.6 8.4 27.2M14.6 14.2l8.8 8.6M22.2 8.4c2.4 2.2 2.2 5.4-.2 7.4l-2.2 2-5.2-5 2.2-2.2c2.2-2.2 5.4-2.4 7.4-.2z" /> : null}
+      {name === "home" ? <path {...pen} d="M7.2 16.2 18 7.4l10.8 8.8V28H7.2zM15.2 28v-7.2h5.6V28" /> : null}
+    </svg>
+  );
+}
+
 function Pill({
   children,
   href,
@@ -92,7 +117,7 @@ function Pill({
   onClick?: () => void;
   dark?: boolean;
 }) {
-  const className = `tap inline-flex items-center gap-3 rounded-full py-1.5 pl-5 pr-1.5 font-display text-sm uppercase tracking-wider text-white ${dark ? "bg-ink hover:bg-ink-soft" : "bg-red hover:bg-red-deep"}`;
+  const className = `tap inline-flex items-center gap-3 rounded-full py-1.5 pl-5 pr-1.5 font-display text-base uppercase tracking-wider text-white ${dark ? "bg-ink hover:bg-ink-soft" : "bg-red hover:bg-red-deep"}`;
   const inner = (
     <>
       {children}
@@ -210,17 +235,15 @@ export function HomePage() {
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add("is-in");
-          io.unobserve(entry.target);
+          entry.target.classList.toggle("is-in", entry.isIntersecting);
         });
       },
-      { threshold: 0.16, rootMargin: "0px 0px -32px 0px" },
+      { threshold: 0.14, rootMargin: "0px 0px -6% 0px" },
     );
     nodes.forEach((node) => {
-      const rect = node.getBoundingClientRect();
-      if (rect.top < window.innerHeight * 0.9) return;
       node.classList.add("fade-section");
+      const rect = node.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.9 && rect.bottom > 40) node.classList.add("is-in");
       io.observe(node);
     });
     return () => io.disconnect();
@@ -294,22 +317,22 @@ export function HomePage() {
       <header className={`sticky top-0 z-40 bg-card/95 backdrop-blur ${scrolled ? "shadow-md" : ""}`}>
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-5">
           <a href="#top" className="shrink-0" aria-label="Garage Door Store Boise home">
-            <img src="/brand/logo.png" alt="Garage Door Store Boise" className="h-12 w-auto sm:h-14" />
+            <img src="/brand/logo.png" alt="Garage Door Store Boise" className="h-10 w-auto max-w-[9.5rem] object-contain object-left sm:h-14 sm:max-w-none" />
           </a>
           <nav className="hidden items-center gap-7 lg:flex" aria-label="Primary">
-            <a href="#top" className="navlink text-sm font-medium">Home</a>
-            <a href="#about" className="navlink text-sm font-medium">About</a>
-            <a href="#services" className="navlink text-sm font-medium">Services</a>
-            <a href="#projects" className="navlink text-sm font-medium">Projects</a>
+            <a href="#top" className="navlink text-base font-medium">Home</a>
+            <a href="#about" className="navlink text-base font-medium">About</a>
+            <a href="#services" className="navlink text-base font-medium">Services</a>
+            <a href="#projects" className="navlink text-base font-medium">Projects</a>
             <div className="relative" onMouseEnter={() => setPages(true)} onMouseLeave={() => setPages(false)}>
-              <button type="button" className="navlink inline-flex items-center gap-1 text-sm font-medium" aria-expanded={pages} onClick={() => setPages((open) => !open)}>
+              <button type="button" className="navlink inline-flex items-center gap-1 text-base font-medium" aria-expanded={pages} onClick={() => setPages((open) => !open)}>
                 Pages
                 <ChevronDown className="size-4" aria-hidden />
               </button>
               {pages ? (
                 <div className="absolute left-0 top-full z-20 w-44 rounded-2xl border border-line bg-card p-2 shadow-xl">
                   {pageLinks.map(([label, href]) => (
-                    <a key={label} href={href} className="block rounded-xl px-3 py-2 text-sm hover:bg-paper" onClick={() => setPages(false)}>
+                    <a key={label} href={href} className="block rounded-xl px-3 py-2 text-base hover:bg-paper" onClick={() => setPages(false)}>
                       {label}
                     </a>
                   ))}
@@ -318,7 +341,7 @@ export function HomePage() {
             </div>
           </nav>
           <div className="flex items-center gap-2">
-            <a href={PHONE_HREF} className="tap hidden items-center gap-2 rounded-full border border-line px-4 py-2.5 text-sm font-medium sm:inline-flex">
+            <a href={PHONE_HREF} className="tap hidden items-center gap-2 rounded-full border border-line px-4 py-2.5 text-base font-medium sm:inline-flex">
               <Phone className="size-4 text-red" aria-hidden />
               {PHONE}
             </a>
@@ -341,7 +364,7 @@ export function HomePage() {
       {menu ? (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-ink text-white lg:hidden">
           <div className="flex items-center justify-between px-5 py-4">
-            <img src="/brand/logo.png" alt="" className="h-12 w-auto" />
+            <img src="/brand/logo.png" alt="" className="h-12 w-auto rounded-lg bg-white px-2 py-1" />
             <button type="button" className="grid size-11 place-items-center rounded-full border border-white/20" aria-label="Close menu" onClick={() => setMenu(false)}>
               <X className="size-5" />
             </button>
@@ -368,7 +391,7 @@ export function HomePage() {
 
       <main id="content">
         <section id="top" className="px-3 pt-3 sm:px-4">
-          <div className="relative min-h-[640px] overflow-hidden rounded-[1.75rem] sm:min-h-[700px]">
+          <div className="relative min-h-0 overflow-hidden rounded-[1.75rem] sm:min-h-[700px]">
             {heroSlides.map((slide, index) => (
               <img
                 key={slide.src}
@@ -377,10 +400,10 @@ export function HomePage() {
                 className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${index === hero ? "opacity-100" : "opacity-0"} ${index === hero ? "kenburns" : ""}`}
               />
             ))}
-            <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/75 to-ink/15" />
-            <div className="relative z-10 flex min-h-[640px] flex-col justify-between p-6 sm:min-h-[700px] sm:p-10 lg:p-14">
-              <div className="max-w-xl pt-4 lg:pt-8">
-                <p className="mb-5 flex items-center gap-2 text-sm text-white/85">
+            <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-ink/45 sm:bg-gradient-to-r sm:from-ink sm:via-ink/75 sm:to-ink/15" />
+            <div className="relative z-10 flex min-h-[34rem] flex-col justify-between p-5 sm:min-h-[700px] sm:p-10 lg:p-14">
+              <div className="max-w-xl pt-2 lg:pt-8">
+                <p className="mb-4 flex items-center gap-2 text-base text-white/85">
                   <span className="flex text-red" aria-hidden>
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star key={i} className="size-4 fill-red" />
@@ -388,100 +411,72 @@ export function HomePage() {
                   </span>
                   Reviewed on Google
                 </p>
-                <h1 className="font-display text-5xl uppercase leading-[0.9] text-white sm:text-6xl lg:text-7xl">
+                <h1 className="font-display text-4xl uppercase leading-[0.92] text-white sm:text-6xl lg:text-7xl">
                   Doors that
                   <br />
                   open. Crews
                   <br />
                   that show.
                 </h1>
-                <p className="mt-5 max-w-md text-base leading-relaxed text-white/80 sm:text-lg">
+                <p className="mt-4 max-w-md text-base leading-relaxed text-white/90 sm:mt-5 sm:text-lg">
                   Broken springs, stuck doors, and openers — repaired or replaced the same day across Boise and the Treasure Valley.
                 </p>
-                <div className="mt-8 flex flex-wrap items-center gap-3">
+                <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap sm:items-center [&>*]:w-full sm:[&>*]:w-auto">
                   <Pill onClick={() => openQuote()}>Get free estimate</Pill>
-                  <a href="#projects" className="tap inline-flex items-center gap-2 rounded-full border border-white/50 px-5 py-3 text-sm font-medium text-white hover:bg-white hover:text-ink">
+                  <a href="#projects" className="tap inline-flex items-center justify-center gap-2 rounded-full border border-white/50 px-5 py-3 text-base font-medium text-white hover:bg-white hover:text-ink">
                     View projects
                     <ArrowUpRight className="size-4" aria-hidden />
                   </a>
                 </div>
               </div>
-              <dl className="mt-10 grid w-full grid-cols-2 gap-x-6 gap-y-5 border-t border-white/15 pt-6 lg:grid-cols-4 lg:gap-8 lg:pr-16">
-                <div className="flex items-center gap-3">
-                  <dt className="font-display text-4xl leading-none text-white sm:text-5xl">
-                    <CountUp to={30} suffix="+" />
-                  </dt>
-                  <dd className="text-[11px] font-medium uppercase leading-tight tracking-[0.12em] text-white/75">
-                    Years of
-                    <br />
-                    experience
-                  </dd>
-                </div>
-                <div className="flex items-center gap-3">
-                  <dt className="font-display text-4xl leading-none text-white sm:text-5xl">
-                    <CountUp to={24} suffix="/7" />
-                  </dt>
-                  <dd className="text-[11px] font-medium uppercase leading-tight tracking-[0.12em] text-white/75">
-                    Technicians
-                    <br />
-                    on call
-                  </dd>
-                </div>
-                <div className="flex items-center gap-3">
-                  <dt className="font-display text-4xl leading-none text-white sm:text-5xl">
-                    <CountUp to={10} suffix=" yr" />
-                  </dt>
-                  <dd className="text-[11px] font-medium uppercase leading-tight tracking-[0.12em] text-white/75">
-                    Spring
-                    <br />
-                    warranty
-                  </dd>
-                </div>
-                <div className="flex items-center gap-3">
-                  <dt className="whitespace-nowrap font-display text-3xl uppercase leading-none text-white sm:text-4xl">Same day</dt>
-                  <dd className="text-[11px] font-medium uppercase leading-tight tracking-[0.12em] text-white/75">
-                    When the door
-                    <br />
-                    is stuck
-                  </dd>
-                </div>
+              <dl className="mt-8 grid grid-cols-2 gap-x-4 gap-y-5 border-t border-white/20 pt-6 sm:mt-10 lg:grid-cols-4 lg:gap-0">
+                {(
+                  [
+                    ["years", <CountUp key="y" to={30} suffix="+" />, "Years of experience"],
+                    ["clock", <CountUp key="c" to={24} suffix="/7" />, "Technicians on call"],
+                    ["shield", <CountUp key="s" to={10} suffix=" yr" />, "Spring warranty"],
+                    ["truck", "Same day", "When the door is stuck"],
+                  ] as const
+                ).map(([icon, value, label], index) => (
+                  <div key={label} className={`flex items-center gap-3 ${index ? "lg:border-l lg:border-white/20 lg:pl-6" : ""} ${index < 3 ? "lg:pr-6" : ""}`}>
+                    <SketchIcon name={icon} />
+                    <div className="min-w-0">
+                      <dt className="font-display text-3xl uppercase leading-none text-white sm:text-4xl">{value}</dt>
+                      <dd className="mt-1 text-sm font-medium uppercase leading-tight tracking-wide text-white/80">{label}</dd>
+                    </div>
+                  </div>
+                ))}
               </dl>
             </div>
           </div>
         </section>
 
         <section id="about" className="mx-auto max-w-7xl px-5 py-20 lg:py-28">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red">Issues</p>
-            <h2 className="mt-3 font-display text-4xl uppercase leading-none sm:text-5xl">What's happening with your garage door?</h2>
-            <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-muted">Choose the issue that sounds closest and we'll tell you what it usually takes to get the door moving.</p>
+          <div className="text-center">
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-red">Issues</p>
+            <h2 className="mt-3 whitespace-nowrap font-display uppercase leading-none tracking-tight text-[clamp(0.95rem,2.45vw,3.15rem)]">What's happening with your garage door?</h2>
+            <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-muted">Choose the issue that sounds closest and we'll tell you what it usually takes to get the door moving.</p>
           </div>
-          <div className="mt-12 grid gap-4 lg:grid-cols-3">
-            <div className="grid gap-4">
-              {issues.slice(0, 2).map((item) => (
-                <button key={item.n} type="button" onClick={() => openQuote("Garage Door Repair")} className="tap rounded-3xl border border-line bg-card p-6 text-left hover:border-ink">
-                  <p className="font-display text-sm text-red">{item.n}</p>
-                  <h3 className="mt-6 font-display text-2xl uppercase">{item.title}</h3>
-                  <p className="mt-2 text-sm text-muted">{item.text}</p>
-                  <span className="mt-6 inline-flex items-center gap-1 text-sm font-medium">
-                    Get repair help <ArrowRight className="size-4" aria-hidden />
-                  </span>
-                </button>
-              ))}
-            </div>
-            <img src="/brand/doorE.webp" alt="Garage Door Store Boise technicians with their service trucks" className="h-72 w-full rounded-3xl object-cover object-bottom lg:h-full" />
-            <div className="grid gap-4">
-              {issues.slice(2).map((item) => (
-                <button key={item.n} type="button" onClick={() => openQuote(item.n === "03" ? "Spring Replacement" : "Garage Door Repair")} className="tap rounded-3xl border border-line bg-card p-6 text-left hover:border-ink">
-                  <p className="font-display text-sm text-red">{item.n}</p>
-                  <h3 className="mt-6 font-display text-2xl uppercase">{item.title}</h3>
-                  <p className="mt-2 text-sm text-muted">{item.text}</p>
-                  <span className="mt-6 inline-flex items-center gap-1 text-sm font-medium">
-                    Get repair help <ArrowRight className="size-4" aria-hidden />
-                  </span>
-                </button>
-              ))}
-            </div>
+          <div className="mt-12 grid gap-4 lg:grid-cols-3 lg:grid-rows-2">
+            {issues.map((item, index) => (
+              <button
+                key={item.n}
+                type="button"
+                onClick={() => openQuote(item.n === "03" ? "Spring Replacement" : "Garage Door Repair")}
+                className={`tap order-1 flex h-full min-h-48 flex-col rounded-3xl border border-line bg-card p-6 text-left hover:border-ink ${["lg:order-none lg:col-start-1 lg:row-start-1", "order-2 lg:order-none lg:col-start-1 lg:row-start-2", "order-4 lg:order-none lg:col-start-3 lg:row-start-1", "order-5 lg:order-none lg:col-start-3 lg:row-start-2"][index]}`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <p className="font-display text-base text-red">{item.n}</p>
+                  <SketchIcon name={(["door", "opener", "spring", "track"] as const)[index]} className="size-8 text-red" />
+                </div>
+                <h3 className="mt-4 font-display text-2xl uppercase leading-none">{item.title}</h3>
+                <p className="mt-3 text-base leading-relaxed text-muted">{item.text}</p>
+                <span className="mt-auto inline-flex items-center gap-1 pt-6 text-base font-medium">
+                  Get repair help <ArrowRight className="size-4" aria-hidden />
+                </span>
+              </button>
+            ))}
+            <img src="/brand/doorE.webp" alt="Garage Door Store Boise technicians with their service trucks" className="order-3 h-72 w-full rounded-3xl object-cover object-[center_40%] lg:order-none lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:h-full" />
           </div>
         </section>
 
@@ -489,7 +484,7 @@ export function HomePage() {
           <div className="mx-auto max-w-7xl px-5">
             <div className="flex flex-wrap items-end justify-between gap-6">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red">Services</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.22em] text-red">Services</p>
                 <h2 className="mt-3 max-w-xl font-display text-4xl uppercase leading-none sm:text-5xl">Solutions built to keep your garage door moving</h2>
               </div>
               <Pill dark onClick={() => openQuote()}>View all services</Pill>
@@ -498,12 +493,12 @@ export function HomePage() {
               {services.map((item, index) => (
                 <article key={item.title} className="card-zoom group relative h-80 overflow-hidden rounded-3xl">
                   <img src={item.image} alt="" className="h-full w-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-ink/10" />
-                  <p className="absolute left-5 top-5 text-xs font-semibold uppercase tracking-[0.18em] text-red">Service {String(index + 1).padStart(2, "0")}</p>
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-ink/25" />
+                  <p className="absolute left-5 top-5 rounded-full bg-red px-3 py-1 text-sm font-semibold uppercase tracking-[0.16em] text-white">Service {String(index + 1).padStart(2, "0")}</p>
                   <div className="absolute inset-x-5 bottom-5">
-                    <h3 className="font-display text-2xl uppercase text-white">{item.title}</h3>
-                    <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-white/80">{item.text}</p>
-                    <button type="button" onClick={() => openQuote(item.quote)} className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-red">
+                    <h3 className="font-display text-2xl uppercase text-white drop-shadow-sm">{item.title}</h3>
+                    <p className="mt-2 line-clamp-2 text-base leading-relaxed text-white">{item.text}</p>
+                    <button type="button" onClick={() => openQuote(item.quote)} className="mt-4 inline-flex items-center gap-1 rounded-full bg-red px-3 py-1.5 text-base font-semibold text-white">
                       Explore service <ArrowRight className="size-4" aria-hidden />
                     </button>
                   </div>
@@ -516,43 +511,54 @@ export function HomePage() {
         <section id="coupons" className="mx-auto max-w-7xl px-5 py-16">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red">Coupons</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-red">Coupons</p>
               <h2 className="mt-2 font-display text-3xl uppercase sm:text-4xl">Popular jobs, in writing</h2>
             </div>
-            <button type="button" onClick={() => window.print()} className="tap inline-flex items-center gap-2 rounded-full border border-line bg-card px-4 py-2 text-sm font-medium">
+            <button type="button" onClick={() => window.print()} className="tap inline-flex items-center gap-2 rounded-full border border-line bg-card px-4 py-2 text-base font-medium">
               <Printer className="size-4" aria-hidden />
               Print coupons
             </button>
           </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {coupons.map((item) => (
-              <button key={item.name} type="button" onClick={() => openQuote(item.name)} className={`tap rounded-3xl p-6 text-left ${item.featured ? "bg-ink text-white" : "border border-line bg-card"}`}>
-                <p className={`text-xs uppercase tracking-wider ${item.featured ? "text-white/60" : "text-muted"}`}>Coupon</p>
-                <p className="mt-3 font-display text-4xl text-red">{item.price}</p>
-                <h3 className="mt-2 font-display text-xl uppercase">{item.name}</h3>
-                <p className={`mt-2 text-sm ${item.featured ? "text-white/75" : "text-muted"}`}>{item.note}</p>
-              </button>
-            ))}
+          <div className="relative mt-10 overflow-x-clip">
+            <div className="coupon-splash" aria-hidden />
+            <div className="coupon-splash coupon-splash-right" aria-hidden />
+            <div className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {coupons.map((item, index) => (
+                <button
+                  key={item.name}
+                  type="button"
+                  onClick={() => openQuote(item.name)}
+                  className={`coupon-ticket tap px-5 py-6 text-left md:rotate-[var(--tilt)] ${item.featured ? "is-featured" : ""}`}
+                  style={{ ["--tilt" as string]: `${[-2.5, 1.6, -1.2, 2.2][index]}deg` }}
+                >
+                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-red">Coupon</p>
+                  <p className="mt-2 font-display text-5xl leading-none text-red">{item.price}</p>
+                  <h3 className="mt-3 font-display text-xl uppercase leading-tight">{item.name}</h3>
+                  <p className="mt-2 text-base leading-relaxed text-muted">{item.note}</p>
+                </button>
+              ))}
+            </div>
           </div>
         </section>
 
         <section className="w-full border-y border-ink/20 bg-white">
           <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 py-16 lg:grid-cols-2 lg:px-8 lg:py-24">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red">Why us</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-red">Why us</p>
             <h2 className="mt-3 font-display text-4xl uppercase leading-none sm:text-5xl">Clear answers before the work begins.</h2>
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">
+            <p className="mt-4 max-w-md text-base leading-relaxed text-muted">
               A stuck door can stop the whole day. We name the issue, price it, and fix it with the same local crew — family owned in Boise for more than 30 years.
             </p>
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              {reasons.map((item) => (
-                <div key={item.title} className="rounded-2xl border border-line bg-paper p-4">
-                  <h3 className="font-display text-lg uppercase">{item.title}</h3>
-                  <p className="mt-1 text-sm text-muted">{item.text}</p>
+              {reasons.map((item, index) => (
+                <div key={item.title} className="relative rounded-2xl border border-line bg-paper p-4">
+                  <SketchIcon name={(["guide", "tech", "craft", "home"] as const)[index]} className="absolute right-3 top-3 size-7 text-red" />
+                  <h3 className="pr-9 font-display text-lg uppercase leading-tight">{item.title}</h3>
+                  <p className="mt-1 text-base text-muted">{item.text}</p>
                 </div>
               ))}
             </div>
-            <a href="#contact" className="mt-6 inline-flex items-center gap-2 text-sm font-medium">
+            <a href="#contact" className="mt-6 inline-flex items-center gap-2 text-base font-medium">
               Why choose us <ArrowRight className="size-4" aria-hidden />
             </a>
           </div>
@@ -564,10 +570,10 @@ export function HomePage() {
           <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8 lg:py-24">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red">Projects</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-red">Projects</p>
               <h2 className="mt-3 max-w-xl font-display text-4xl uppercase leading-none sm:text-5xl">Work that changes how the whole home feels.</h2>
             </div>
-            <a href="#gallery" className="tap inline-flex items-center gap-3 rounded-full bg-ink py-1.5 pl-5 pr-1.5 font-display text-sm uppercase tracking-wider text-white">
+            <a href="#gallery" className="tap inline-flex items-center gap-3 rounded-full bg-ink py-1.5 pl-5 pr-1.5 font-display text-base uppercase tracking-wider text-white">
               View all projects
               <span className="grid size-8 place-items-center rounded-full bg-red text-white">
                 <ArrowRight className="size-4" aria-hidden />
@@ -576,16 +582,22 @@ export function HomePage() {
           </div>
           <div className="mt-12 grid gap-4 md:grid-cols-3">
             {gallery.slice(0, 3).map((item, index) => (
-              <button key={item.src} type="button" onClick={() => setShot(index)} className="card-zoom group relative h-80 overflow-hidden rounded-3xl text-left">
+              <button key={item.src} type="button" onClick={() => setShot(index)} className="card-zoom group relative aspect-[4/3] overflow-hidden rounded-3xl text-left">
                 <img src={item.src} alt={item.alt} className="h-full w-full object-cover" />
-                <span className="absolute bottom-4 left-4 rounded-full bg-ink/85 px-4 py-2 font-display text-sm uppercase tracking-wider text-white">{item.caption}</span>
+                <span className="absolute bottom-4 left-4 rounded-full bg-ink px-4 py-2 font-display text-base uppercase tracking-wider text-white">{item.caption}</span>
               </button>
             ))}
           </div>
-          <div id="gallery" className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-5">
+          <div id="gallery" className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-6">
             {gallery.slice(3).map((item, index) => (
-              <button key={item.src} type="button" onClick={() => setShot(index + 3)} className="card-zoom relative h-36 overflow-hidden rounded-2xl sm:h-44">
-                <img src={item.src} alt={item.alt} className="h-full w-full object-cover" />
+              <button
+                key={item.src}
+                type="button"
+                onClick={() => setShot(index + 3)}
+                className={`card-zoom group relative h-44 overflow-hidden rounded-3xl text-left sm:h-52 ${index > 2 ? "md:col-span-3" : "md:col-span-2"}`}
+              >
+                <img src={item.src} alt={item.alt} className="h-full w-full object-cover object-[center_65%]" />
+                <span className="absolute bottom-3 left-3 max-w-[calc(100%-1.5rem)] truncate rounded-full bg-ink px-3 py-1.5 font-display text-sm uppercase tracking-wider text-white">{item.caption}</span>
               </button>
             ))}
           </div>
@@ -596,9 +608,9 @@ export function HomePage() {
           <div className="mx-auto max-w-7xl px-5">
             <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-[#f4f4f4] px-5 py-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red">Testimonials</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.22em] text-red">Testimonials</p>
                 <h2 className="mt-2 font-display text-2xl uppercase leading-none sm:text-3xl">Top rated in Boise</h2>
-                <p className="mt-2 flex flex-wrap items-center gap-2 text-sm text-ink">
+                <p className="mt-2 flex flex-wrap items-center gap-2 text-base text-ink">
                   <GoogleMark />
                   <GoldStars />
                   <span className="font-semibold">{GOOGLE_RATING}</span>
@@ -607,21 +619,21 @@ export function HomePage() {
                   </a>
                 </p>
               </div>
-              <a href={REVIEWS_LINK} target="_blank" rel="noreferrer" className="tap rounded-lg bg-red px-4 py-2.5 text-sm font-medium text-white hover:bg-red-deep">
+              <a href={REVIEWS_LINK} target="_blank" rel="noreferrer" className="tap rounded-lg bg-red px-4 py-2.5 text-base font-medium text-white hover:bg-red-deep">
                 Write a review
               </a>
             </div>
             <div className="relative mt-4">
-              <div ref={reviewRow} className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none]">
+              <div ref={reviewRow} className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 <article className="flex w-[86%] shrink-0 snap-start flex-col rounded-2xl border border-line bg-gradient-to-br from-white to-[#fde8e6] p-5 sm:w-[46%] lg:w-[calc(33.333%-0.75rem)]">
                   <div className="flex items-center gap-3">
-                    <span className="grid size-11 place-items-center rounded-full bg-red font-display text-sm text-white">G</span>
+                    <span className="grid size-11 place-items-center rounded-full bg-red font-display text-base text-white">G</span>
                     <span>
                       <span className="block font-semibold">Review summary</span>
-                      <span className="text-sm text-muted">From Google reviews</span>
+                      <span className="text-base text-muted">From Google reviews</span>
                     </span>
                   </div>
-                  <p className="mt-4 text-sm leading-relaxed text-ink">
+                  <p className="mt-4 text-base leading-relaxed text-ink">
                     Neighbors mention same-day spring repairs, fair prices, and a text before the technician arrives. Calls come back quickly, and the door is usually working again in one visit.
                   </p>
                 </article>
@@ -631,12 +643,12 @@ export function HomePage() {
                     <article key={item.name} className="hover-lift flex w-[86%] shrink-0 snap-start flex-col rounded-2xl border border-line bg-[#f7f7f7] p-5 sm:w-[46%] lg:w-[calc(33.333%-0.75rem)]">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-center gap-3">
-                          <span className="grid size-11 place-items-center rounded-full bg-ink font-display text-sm text-white" aria-hidden>
+                          <span className="grid size-11 place-items-center rounded-full bg-ink font-display text-base text-white" aria-hidden>
                             {item.name.slice(0, 1)}
                           </span>
                           <span>
                             <span className="block font-semibold">{item.name}</span>
-                            <span className="text-sm text-muted">{item.place}</span>
+                            <span className="text-base text-muted">{item.place}</span>
                           </span>
                         </div>
                         <GoogleMark />
@@ -644,8 +656,8 @@ export function HomePage() {
                       <div className="mt-3">
                         <GoldStars />
                       </div>
-                      <p className={`mt-3 text-sm leading-relaxed text-ink ${open ? "" : "line-clamp-5"}`}>“{item.quote}”</p>
-                      <button type="button" className="mt-3 w-fit text-sm font-medium text-ink underline-offset-4 hover:underline" onClick={() => setOpenReview(open ? null : item.name)}>
+                      <p className={`mt-3 text-base leading-relaxed text-ink ${open ? "" : "line-clamp-5"}`}>“{item.quote}”</p>
+                      <button type="button" className="mt-3 w-fit text-base font-medium text-ink underline-offset-4 hover:underline" onClick={() => setOpenReview(open ? null : item.name)}>
                         {open ? "Show less" : "Read more"}
                       </button>
                     </article>
@@ -655,7 +667,7 @@ export function HomePage() {
               <button
                 type="button"
                 aria-label="Next reviews"
-                className="tap absolute -right-2 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full border border-line bg-white shadow-md"
+                className="tap absolute -right-1 top-1/2 hidden size-11 -translate-y-1/2 place-items-center rounded-full border border-line bg-white shadow-md sm:grid"
                 onClick={() => {
                   const row = reviewRow.current;
                   if (!row) return;
@@ -673,9 +685,9 @@ export function HomePage() {
 
         <section id="faq" className="w-full border-y border-ink/20 bg-white">
           <div className="mx-auto grid max-w-7xl items-stretch gap-10 px-5 py-16 lg:grid-cols-[0.8fr_1.2fr] lg:px-8 lg:py-24">
-          <div className="flex h-full flex-col justify-between">
+          <div className="flex h-full items-center">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red">FAQ</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-red">FAQ</p>
               <h2 className="mt-3 font-display text-4xl uppercase leading-[0.92] sm:text-5xl">
                 Before you book
                 <br />
@@ -687,22 +699,22 @@ export function HomePage() {
                 <br className="hidden sm:block" />
                 and what a tune-up includes.
               </p>
-            </div>
-            <a href={PHONE_HREF} className="inline-flex items-center gap-3 text-ink">
-              <span className="grid size-12 place-items-center rounded-full bg-red text-white">
-                <Phone className="size-5" aria-hidden />
-              </span>
-              <span>
-                <span className="block text-xs uppercase tracking-[0.18em] text-muted">Talk to a technician</span>
-                <span className="font-display text-2xl">{PHONE}</span>
-              </span>
-            </a>
-            <div className="flex gap-3 text-ink">
-              {socials.map((item) => (
-                <a key={item.label} href={item.href} target="_blank" rel="noreferrer" aria-label={item.label} className="grid size-10 place-items-center rounded-full border border-line hover:bg-card">
-                  <SocialIcon label={item.label} />
-                </a>
-              ))}
+              <a href={PHONE_HREF} className="mt-6 inline-flex items-center gap-3 text-ink">
+                <span className="grid size-12 place-items-center rounded-full bg-red text-white">
+                  <Phone className="size-5" aria-hidden />
+                </span>
+                <span>
+                  <span className="block text-sm uppercase tracking-[0.18em] text-muted">Talk to a technician</span>
+                  <span className="font-display text-2xl">{PHONE}</span>
+                </span>
+              </a>
+              <div className="mt-6 flex gap-3 text-ink">
+                {socials.map((item) => (
+                  <a key={item.label} href={item.href} target="_blank" rel="noreferrer" aria-label={item.label} className="grid size-10 place-items-center rounded-full border border-line hover:bg-card">
+                    <SocialIcon label={item.label} />
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
           <div className="space-y-3">
@@ -716,7 +728,7 @@ export function HomePage() {
                   </button>
                   <div className={`acc-panel ${open ? "open" : ""}`}>
                     <div>
-                      <p className={`px-5 pb-5 text-sm leading-relaxed ${open ? "text-white/80" : "text-muted"}`}>{item.a}</p>
+                      <p className={`px-5 pb-5 text-base leading-relaxed ${open ? "text-white/80" : "text-muted"}`}>{item.a}</p>
                     </div>
                   </div>
                 </div>
@@ -732,10 +744,10 @@ export function HomePage() {
             <div className="absolute inset-0 bg-ink/80" />
             <div className="relative grid items-center gap-10 lg:grid-cols-2">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red">Schedule</p>
-                <h2 className="mt-3 font-display text-4xl uppercase leading-none sm:text-6xl">Garage door stuck or refusing to open?</h2>
+                <p className="text-sm font-semibold uppercase tracking-[0.22em] text-red">Schedule</p>
+                <h2 className="mt-3 font-display text-3xl uppercase leading-none sm:text-5xl lg:text-6xl">Garage door stuck or refusing to open?</h2>
                 <p className="mt-4 max-w-md text-white/80">Request a free estimate, or call and talk to a technician now. Someone answers 24/7.</p>
-                <a href={PHONE_HREF} className="tap mt-8 inline-flex items-center gap-2 rounded-full border border-white/50 px-5 py-3 text-sm text-white hover:bg-white hover:text-ink">
+                <a href={PHONE_HREF} className="tap mt-8 inline-flex items-center gap-2 rounded-full border border-white/50 px-5 py-3 text-base text-white hover:bg-white hover:text-ink">
                   <Phone className="size-4" aria-hidden />
                   Call {PHONE}
                 </a>
@@ -744,21 +756,21 @@ export function HomePage() {
                 {bannerSent ? (
                   <div>
                     <h3 className="font-display text-3xl uppercase">We'll call you shortly.</h3>
-                    <p className="mt-2 text-sm text-white/75">A technician follows up on this request. If the door is stuck right now, call {PHONE}.</p>
+                    <p className="mt-2 text-base text-white/75">A technician follows up on this request. If the door is stuck right now, call {PHONE}.</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
                     <p className="font-display text-2xl uppercase">Request a callback</p>
-                    {bannerError ? <p className="text-sm text-red">{bannerError}</p> : null}
-                    <label className="block text-sm">
+                    {bannerError ? <p className="text-base text-red">{bannerError}</p> : null}
+                    <label className="block text-base">
                       Name
                       <input name="name" required autoComplete="name" className="mt-1 w-full rounded-xl border border-white/25 bg-white/10 px-3 py-3 text-white outline-none placeholder:text-white/40 focus:border-white" />
                     </label>
-                    <label className="block text-sm">
+                    <label className="block text-base">
                       Phone
                       <input name="phone" required type="tel" autoComplete="tel" className="mt-1 w-full rounded-xl border border-white/25 bg-white/10 px-3 py-3 text-white outline-none placeholder:text-white/40 focus:border-white" />
                     </label>
-                    <label className="block text-sm">
+                    <label className="block text-base">
                       Service
                       <select name="service" value={service} onChange={(event) => setService(event.target.value)} className="mt-1 w-full rounded-xl border border-white/25 bg-ink/40 px-3 py-3 text-white outline-none focus:border-white">
                         {quoteServices.map((item) => (
@@ -779,33 +791,33 @@ export function HomePage() {
         <section id="contact" className="bg-card py-20 lg:py-28">
           <div className="mx-auto grid max-w-7xl items-stretch gap-8 px-5 lg:grid-cols-2">
             <div className="flex flex-col justify-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-red">Location</p>
-              <h2 className="mt-2 font-display text-4xl uppercase leading-none sm:text-5xl">9075 W Hackamore Dr</h2>
-              <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">Boise, ID 83709. Free in-home estimates across the Treasure Valley. Call if the door is stuck — a technician answers.</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-red">Location</p>
+              <h2 className="mt-2 font-display text-3xl uppercase leading-tight sm:text-5xl">9075 W Hackamore Dr</h2>
+              <p className="mt-4 max-w-md text-base leading-relaxed text-muted">Boise, ID 83709. Free in-home estimates across the Treasure Valley. Call if the door is stuck — a technician answers.</p>
               <div className="mt-6 grid max-w-lg grid-cols-2 gap-3">
                 <div className="rounded-2xl border border-line bg-paper p-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-red">Phone</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.16em] text-red">Phone</p>
                   <p className="mt-2 font-display text-2xl uppercase">24 / 7</p>
-                  <p className="mt-1 text-sm text-muted">Someone answers, day or night.</p>
+                  <p className="mt-1 text-base text-muted">Someone answers, day or night.</p>
                 </div>
                 <div className="rounded-2xl border border-line bg-paper p-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-red">Visits</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.16em] text-red">Visits</p>
                   <p className="mt-2 font-display text-2xl uppercase">Mon – Sun</p>
-                  <p className="mt-1 text-sm text-muted">Same day when the door is stuck.</p>
+                  <p className="mt-1 text-base text-muted">Same day when the door is stuck.</p>
                 </div>
                 <div className="rounded-2xl border border-line bg-paper p-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-red">Estimates</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.16em] text-red">Estimates</p>
                   <p className="mt-2 font-display text-2xl uppercase">Free</p>
-                  <p className="mt-1 text-sm text-muted">In home, across the Treasure Valley.</p>
+                  <p className="mt-1 text-base text-muted">In home, across the Treasure Valley.</p>
                 </div>
                 <div className="rounded-2xl border border-line bg-paper p-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-red">Shop</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.16em] text-red">Shop</p>
                   <p className="mt-2 font-display text-2xl uppercase">Boise</p>
-                  <p className="mt-1 text-sm text-muted">9075 W Hackamore Dr</p>
+                  <p className="mt-1 text-base text-muted">9075 W Hackamore Dr</p>
                 </div>
               </div>
               <a href={PHONE_HREF} className="mt-5 block font-display text-2xl text-red">{PHONE}</a>
-              <a href={MAP_LINK} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm font-medium">
+              <a href={MAP_LINK} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-2 text-base font-medium">
                 <MapPin className="size-4 text-red" aria-hidden />
                 Open this pin in Google Maps
               </a>
@@ -818,25 +830,25 @@ export function HomePage() {
         </section>
       </main>
 
-      <footer className="border-t-4 border-red bg-paper px-5 pb-24 pt-12 text-ink lg:pb-10">
+      <footer className="border-t-4 border-red bg-paper px-5 pb-36 pt-12 text-ink lg:pb-10">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-wrap items-center justify-between gap-6 border-b border-line pb-8">
             <img src="/brand/logo.png" alt="Garage Door Store Boise" className="h-16 w-auto sm:h-20" />
-            <p className="max-w-xs text-sm leading-relaxed text-muted">Family-owned repair and installation in Boise. Licensed and insured. Over 30 years in the Treasure Valley.</p>
+            <p className="max-w-xs text-base leading-relaxed text-muted">Family-owned repair and installation in Boise. Licensed and insured. Over 30 years in the Treasure Valley.</p>
             <div className="flex flex-wrap gap-3">
-              <a href={PHONE_HREF} className="inline-flex items-center gap-2 rounded-full bg-red px-5 py-3 text-sm font-medium text-white">
+              <a href={PHONE_HREF} className="inline-flex items-center gap-2 rounded-full bg-red px-5 py-3 text-base font-medium text-white">
                 <Phone className="size-4" aria-hidden />
                 {PHONE}
               </a>
-              <button type="button" onClick={() => openQuote()} className="rounded-full border border-ink px-5 py-3 text-sm font-medium">
+              <button type="button" onClick={() => openQuote()} className="rounded-full border border-ink px-5 py-3 text-base font-medium">
                 Free estimate
               </button>
             </div>
           </div>
           <div className="grid gap-10 py-10 sm:grid-cols-2 lg:grid-cols-4">
             <div>
-              <h2 className="font-display text-sm uppercase tracking-[0.16em]">Quick links</h2>
-              <ul className="mt-4 space-y-2 text-sm text-muted">
+              <h2 className="font-display text-base uppercase tracking-[0.16em]">Quick links</h2>
+              <ul className="mt-4 space-y-2 text-base text-muted">
                 {[
                   ["About", "#about"],
                   ["Services", "#services"],
@@ -851,8 +863,8 @@ export function HomePage() {
               </ul>
             </div>
             <div>
-              <h2 className="font-display text-sm uppercase tracking-[0.16em]">Our services</h2>
-              <ul className="mt-4 space-y-2 text-sm text-muted">
+              <h2 className="font-display text-base uppercase tracking-[0.16em]">Our services</h2>
+              <ul className="mt-4 space-y-2 text-base text-muted">
                 {services.map((item) => (
                   <li key={item.title}>
                     <button type="button" className="text-left hover:text-red" onClick={() => openQuote(item.quote)}>
@@ -863,16 +875,16 @@ export function HomePage() {
               </ul>
             </div>
             <div>
-              <h2 className="font-display text-sm uppercase tracking-[0.16em]">Locations</h2>
-              <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-muted">
+              <h2 className="font-display text-base uppercase tracking-[0.16em]">Locations</h2>
+              <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-base text-muted">
                 {areas.slice(0, 8).map((city) => (
                   <li key={city}>{city}</li>
                 ))}
               </ul>
             </div>
             <div id="visit">
-              <h2 className="font-display text-sm uppercase tracking-[0.16em]">Visit</h2>
-              <a href={MAP_LINK} target="_blank" rel="noreferrer" className="mt-4 flex items-start gap-2 text-sm text-muted hover:text-red">
+              <h2 className="font-display text-base uppercase tracking-[0.16em]">Visit</h2>
+              <a href={MAP_LINK} target="_blank" rel="noreferrer" className="mt-4 flex items-start gap-2 text-base text-muted hover:text-red">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-red" aria-hidden />
                 <span>
                   {ADDRESS[0]}
@@ -880,11 +892,11 @@ export function HomePage() {
                   {ADDRESS[1]}
                 </span>
               </a>
-              <a href={`mailto:${EMAIL}`} className="mt-3 flex items-center gap-2 text-sm text-muted hover:text-red">
+              <a href={`mailto:${EMAIL}`} className="mt-3 flex items-center gap-2 text-base text-muted hover:text-red">
                 <Mail className="size-4 text-red" aria-hidden />
                 {EMAIL}
               </a>
-              <p className="mt-3 flex items-center gap-2 text-sm text-muted">
+              <p className="mt-3 flex items-center gap-2 text-base text-muted">
                 <Check className="size-4 text-red" aria-hidden />
                 Mon–Sun, technicians on call
               </p>
@@ -897,20 +909,20 @@ export function HomePage() {
               </div>
             </div>
           </div>
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-6 text-xs text-muted">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-6 text-sm text-muted">
             <p>© {new Date().getFullYear()} Garage Door Store Boise. Licensed and insured.</p>
             <a href="#top" className="hover:text-red">Back to top</a>
           </div>
         </div>
       </footer>
 
-      <div className="fixed bottom-24 right-4 z-40 flex flex-col items-end lg:bottom-6">
+      <div className="fixed right-4 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-40 flex flex-col items-end lg:bottom-6">
         {ask ? (
-          <div className="mb-3 w-[min(22rem,calc(100vw-2rem))] rounded-3xl border border-line bg-card p-4 shadow-2xl" role="dialog" aria-label="Ask a question">
+          <div className="mb-3 max-h-[min(24rem,60svh)] w-[min(22rem,calc(100vw-2rem))] overflow-y-auto rounded-3xl border border-line bg-card p-4 shadow-2xl" role="dialog" aria-label="Ask a question">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="font-display text-xl uppercase">Ask</p>
-                <p className="text-sm text-muted">Tap a question. A person still answers the phone.</p>
+                <p className="text-base text-muted">Tap a question. A person still answers the phone.</p>
               </div>
               <button type="button" className="grid size-9 place-items-center rounded-full border border-line" aria-label="Close questions" onClick={() => setAsk(false)}>
                 <X className="size-4" />
@@ -919,16 +931,16 @@ export function HomePage() {
             <div className="mt-3 max-h-72 space-y-2 overflow-y-auto">
               {faqs.map((item, index) => (
                 <div key={item.q} className="rounded-xl bg-paper">
-                  <button type="button" className="w-full px-3 py-2.5 text-left text-sm font-medium" aria-expanded={askItem === index} onClick={() => setAskItem(askItem === index ? null : index)}>
+                  <button type="button" className="w-full px-3 py-2.5 text-left text-base font-medium" aria-expanded={askItem === index} onClick={() => setAskItem(askItem === index ? null : index)}>
                     {item.q}
                   </button>
-                  {askItem === index ? <p className="px-3 pb-3 text-sm leading-relaxed text-muted">{item.a}</p> : null}
+                  {askItem === index ? <p className="px-3 pb-3 text-base leading-relaxed text-muted">{item.a}</p> : null}
                 </div>
               ))}
             </div>
             <div className="mt-3 grid grid-cols-2 gap-2">
-              <a href={PHONE_HREF} className="rounded-full bg-red py-2.5 text-center text-sm font-medium text-white">Call</a>
-              <button type="button" className="rounded-full bg-ink py-2.5 text-sm font-medium text-white" onClick={() => { setAsk(false); openQuote(); }}>
+              <a href={PHONE_HREF} className="rounded-full bg-red py-2.5 text-center text-base font-medium text-white">Call</a>
+              <button type="button" className="rounded-full bg-ink py-2.5 text-base font-medium text-white" onClick={() => { setAsk(false); openQuote(); }}>
                 Estimate
               </button>
             </div>
@@ -945,12 +957,12 @@ export function HomePage() {
         </button>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-2 gap-px bg-line lg:hidden">
-        <a href={PHONE_HREF} className="flex items-center justify-center gap-2 bg-red py-3.5 font-display text-sm uppercase tracking-wider text-white">
+      <div className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-2 gap-px bg-line pb-[env(safe-area-inset-bottom)] lg:hidden">
+        <a href={PHONE_HREF} className="flex items-center justify-center gap-2 bg-red py-3.5 font-display text-base uppercase tracking-wider text-white">
           <Phone className="size-4" aria-hidden />
           Call
         </a>
-        <button type="button" onClick={() => openQuote()} className="bg-ink py-3.5 font-display text-sm uppercase tracking-wider text-white">
+        <button type="button" onClick={() => openQuote()} className="bg-ink py-3.5 font-display text-base uppercase tracking-wider text-white">
           Schedule
         </button>
       </div>
@@ -960,7 +972,7 @@ export function HomePage() {
           <div className="max-h-[92svh] w-full max-w-lg overflow-y-auto rounded-3xl bg-card p-6 sm:p-8">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-medium uppercase tracking-[0.16em] text-red">Free estimate</p>
+                <p className="text-base font-medium uppercase tracking-[0.16em] text-red">Free estimate</p>
                 <h2 id="quote-title" className="mt-1 font-display text-3xl uppercase">Schedule service</h2>
               </div>
               <button type="button" className="grid size-10 place-items-center rounded-full border border-line" aria-label="Close" onClick={() => setQuote(false)}>
@@ -970,29 +982,29 @@ export function HomePage() {
             {sent ? (
               <div className="mt-6">
                 <h3 className="font-display text-2xl uppercase">We'll call you shortly.</h3>
-                <p className="mt-2 text-sm text-muted">A technician follows up on {service} requests. If the door is stuck right now, call {PHONE}.</p>
-                <a href={PHONE_HREF} className="mt-5 inline-flex items-center gap-2 rounded-full bg-red px-5 py-3 font-display text-sm uppercase tracking-wider text-white">
+                <p className="mt-2 text-base text-muted">A technician follows up on {service} requests. If the door is stuck right now, call {PHONE}.</p>
+                <a href={PHONE_HREF} className="mt-5 inline-flex items-center gap-2 rounded-full bg-red px-5 py-3 font-display text-base uppercase tracking-wider text-white">
                   <Phone className="size-4" aria-hidden />
                   Call now
                 </a>
               </div>
             ) : (
               <form onSubmit={submit} noValidate className="mt-6 space-y-3">
-                <p className="text-sm text-muted">Tell us the door and the best number. A person calls you back — this form stays on your device.</p>
-                {error ? <p className="text-sm text-red">{error}</p> : null}
-                <label className="block text-sm">
+                <p className="text-base text-muted">Tell us the door and the best number. A person calls you back — this form stays on your device.</p>
+                {error ? <p className="text-base text-red">{error}</p> : null}
+                <label className="block text-base">
                   Name
                   <input name="name" required autoComplete="name" className="mt-1 w-full rounded-xl border border-line bg-paper px-3 py-3 outline-none focus:border-ink" />
                 </label>
-                <label className="block text-sm">
+                <label className="block text-base">
                   Phone
                   <input name="phone" required type="tel" autoComplete="tel" className="mt-1 w-full rounded-xl border border-line bg-paper px-3 py-3 outline-none focus:border-ink" />
                 </label>
-                <label className="block text-sm">
+                <label className="block text-base">
                   Email <span className="text-muted">(optional)</span>
                   <input name="email" type="email" autoComplete="email" className="mt-1 w-full rounded-xl border border-line bg-paper px-3 py-3 outline-none focus:border-ink" />
                 </label>
-                <label className="block text-sm">
+                <label className="block text-base">
                   Service
                   <select name="service" value={service} onChange={(event) => setService(event.target.value)} className="mt-1 w-full rounded-xl border border-line bg-paper px-3 py-3 outline-none focus:border-ink">
                     {quoteServices.map((item) => (
@@ -1000,7 +1012,7 @@ export function HomePage() {
                     ))}
                   </select>
                 </label>
-                <label className="block text-sm">
+                <label className="block text-base">
                   What's going on
                   <textarea name="message" rows={3} className="mt-1 w-full rounded-xl border border-line bg-paper px-3 py-3 outline-none focus:border-ink" placeholder="Spring snapped, door off track, want a new look…" />
                 </label>
