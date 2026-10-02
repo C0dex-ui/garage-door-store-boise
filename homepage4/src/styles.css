@@ -203,6 +203,52 @@
     box-shadow: 8px 8px 0 0 var(--color-red);
   }
 
+  .mill-grid {
+    background-image:
+      linear-gradient(to right, rgb(18 18 18 / 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(18 18 18 / 0.07) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .mill-grid-dark {
+    background-image:
+      linear-gradient(to right, rgb(255 253 248 / 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 253 248 / 0.07) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .mill-grid-red {
+    background-image:
+      linear-gradient(to right, rgb(0 0 0 / 0.12) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(0 0 0 / 0.12) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .mill-stripe {
+    height: 0.65rem;
+    border-radius: 999px;
+    background: repeating-linear-gradient(-45deg, var(--color-red) 0 8px, var(--color-ink) 8px 16px);
+    animation: hazard-roll 0.7s linear infinite;
+  }
+
+  .mill-stripe-light {
+    height: 0.65rem;
+    border-radius: 999px;
+    background: repeating-linear-gradient(-45deg, var(--color-cream) 0 8px, var(--color-ink) 8px 16px);
+    animation: hazard-roll 0.7s linear infinite;
+  }
+
+  .mill-stripe.is-bar {
+    width: 100%;
+    height: 0.8rem;
+    border-radius: 0;
+  }
+
+  .accent-bar {
+    border-left: 6px solid var(--color-red);
+    padding-left: 1rem;
+  }
+
   .peri {
     position: relative;
     display: inline-flex;
@@ -425,6 +471,90 @@
     stroke: none;
   }
 
+  .help-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border: 1.5px solid rgb(255 253 248 / 0.38);
+    border-radius: 0.9rem;
+    background: transparent;
+    padding: 0.85rem 0.9rem;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--color-cream);
+  }
+
+  .help-tab > span {
+    display: grid;
+    width: 1.85rem;
+    height: 1.85rem;
+    flex: none;
+    place-items: center;
+    border: 1.5px solid currentColor;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 800;
+  }
+
+  .help-tab.is-on {
+    border-color: var(--color-red);
+    background: var(--color-red);
+    color: var(--color-cream);
+  }
+
+  .help-tab.is-on > span {
+    border-color: var(--color-ink);
+    background: var(--color-ink);
+    color: var(--color-cream);
+  }
+
+  @media (min-width: 1024px) {
+    .help-tab {
+      width: 100%;
+    }
+  }
+
+  .help-panel {
+    box-shadow: 0 22px 40px -24px rgb(0 0 0 / 0.65);
+  }
+
+  .review-marquee {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .review-marquee::-webkit-scrollbar {
+    display: none;
+  }
+
+  .review-track {
+    display: flex;
+    width: max-content;
+    gap: 1rem;
+  }
+
+  .review-card {
+    width: min(22rem, 78vw);
+    flex: none;
+  }
+
+  .help-photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    align-self: center;
+    aspect-ratio: 4 / 3;
+    background: #1a1a1c;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .help-fade {
+    animation: help-in 520ms ease;
+  }
+
   .ask-fab {
     box-shadow: 0 14px 24px -12px rgb(225 6 0 / 0.85);
     animation: ask-pulse 2.6s ease-in-out infinite;
@@ -621,6 +751,34 @@
   }
 }
 
+@keyframes review-left {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes hazard-roll {
+  to {
+    background-position: 22.627px 0;
+  }
+}
+
+@keyframes help-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @keyframes ask-pulse {
   0%,
   100% {
@@ -722,7 +880,9 @@
   .reveal,
   .hero-copy,
   .quote-swap,
-  .burst {
+  .burst,
+  .mill-stripe,
+  .mill-stripe-light {
     opacity: 1;
     transform: none;
     filter: none;
@@ -739,6 +899,8 @@
   .roll-rig,
   .roll-smoke,
   .roll-smoke span,
+  .help-fade,
+  .review-track,
   .elbow path,
   .ask-fab,
   .play-float {
