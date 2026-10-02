@@ -152,6 +152,9 @@ export function HomePage() {
   const [askOpen, setAskOpen] = useState(false);
   const [askId, setAskId] = useState(0);
   const [reviewPage, setReviewPage] = useState(0);
+  const [reviewPerPage, setReviewPerPage] = useState(() =>
+    window.matchMedia("(max-width: 767px)").matches ? 1 : 3,
+  );
   const [reviewDir, setReviewDir] = useState<1 | -1>(1);
   const [reviewShift, setReviewShift] = useState<"idle" | "prep" | "run">("idle");
   const reviewHold = useRef(false);
@@ -163,11 +166,11 @@ export function HomePage() {
     [doorFilter],
   );
   const activeDoor = filtered[Math.min(doorIndex, Math.max(filtered.length - 1, 0))] ?? doors[0];
-  const reviewPages = Math.ceil(reviews.length / 3);
-  const reviewSlice = reviews.slice(reviewPage * 3, reviewPage * 3 + 3);
+  const reviewPages = Math.max(1, Math.ceil(reviews.length / reviewPerPage));
+  const reviewSlice = reviews.slice(reviewPage * reviewPerPage, reviewPage * reviewPerPage + reviewPerPage);
   const reviewNeighbor = reviews.slice(
-    ((reviewPage + reviewDir + reviewPages) % reviewPages) * 3,
-    ((reviewPage + reviewDir + reviewPages) % reviewPages) * 3 + 3,
+    ((reviewPage + reviewDir + reviewPages) % reviewPages) * reviewPerPage,
+    ((reviewPage + reviewDir + reviewPages) % reviewPages) * reviewPerPage + reviewPerPage,
   );
   const current = slides[slide];
   const mapSrc =
@@ -233,6 +236,16 @@ export function HomePage() {
       if (!node.classList.contains("is-in")) observer.observe(node);
     });
     return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 767px)");
+    const apply = () => {
+      setReviewPerPage(media.matches ? 1 : 3);
+      setReviewPage(0);
+    };
+    media.addEventListener("change", apply);
+    return () => media.removeEventListener("change", apply);
   }, []);
 
   useEffect(() => {
@@ -333,8 +346,8 @@ export function HomePage() {
           </div>
         </div>
         {areaOpen && (
-          <div className="hidden border-t border-line-dark bg-ink text-cream lg:block">
-            <ul className="mx-auto grid max-w-7xl grid-cols-4 gap-1 px-4 py-3 text-sm">
+          <div className="border-t border-line-dark bg-ink text-cream">
+            <ul className="mx-auto grid max-w-7xl grid-cols-2 gap-1 px-4 py-3 text-sm sm:grid-cols-3 lg:grid-cols-4">
               {cities.map((city) => (
                 <li key={city}>
                   <a
@@ -391,23 +404,24 @@ export function HomePage() {
       </header>
 
       <main id="top">
-        <section className="bg-ink text-cream">
+        <section className="mill-grid-dark bg-ink text-cream">
+          <div className="mill-stripe is-bar" aria-hidden />
           <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:py-16">
-            <div>
+            <div className="accent-bar">
               <p
-                className="burst shine inline-flex rounded-full bg-red px-4 py-2 text-sm font-bold tracking-wide text-cream uppercase"
+                className="burst shine inline-flex max-w-full rounded-full bg-red px-4 py-2 text-center text-xs font-bold tracking-wide text-cream uppercase sm:text-sm"
                 style={{ animationDelay: "40ms" }}
               >
                 Same-day service call with repair
               </p>
               <p
-                className="burst mt-6 flex items-center gap-3 text-sm font-bold tracking-[0.16em] text-red uppercase"
+                className="burst mt-6 flex flex-wrap items-center gap-3 text-xs font-extrabold tracking-[0.12em] text-red uppercase sm:text-sm sm:tracking-[0.18em]"
                 style={{ animationDelay: "110ms" }}
               >
                 <span className="h-0.5 w-8 bg-red" aria-hidden />
                 Local garage door repair & installation
               </p>
-              <h1 className="display mt-4 text-[2.7rem] leading-[0.88] text-cream uppercase sm:text-6xl lg:text-7xl">
+              <h1 className="display mt-4 text-4xl leading-[0.88] text-cream uppercase sm:text-6xl lg:text-[5.2rem]">
                 <span className="burst block" style={{ animationDelay: "160ms" }}>
                   Garage door
                 </span>
@@ -418,14 +432,14 @@ export function HomePage() {
                   Call the store.
                 </span>
               </h1>
-              <p className="burst mt-5 max-w-lg text-lg text-cream/80" style={{ animationDelay: "400ms" }}>
+              <p className="burst mt-5 max-w-lg text-lg leading-8 text-cream/80" style={{ animationDelay: "400ms" }}>
                 Family-owned garage door repair across Boise and the Treasure Valley. Real local
                 techs your neighbors know by name, and a set price you approve before any work starts.
               </p>
-              <div className="burst mt-7 flex flex-wrap gap-3" style={{ animationDelay: "480ms" }}>
+              <div className="burst mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap" style={{ animationDelay: "480ms" }}>
                 <a
                   href="#estimate"
-                  className="press shine inline-flex items-center gap-3 rounded-full bg-red py-2 pr-2 pl-5 font-semibold text-cream hover:bg-red-deep"
+                  className="press shine inline-flex items-center justify-center gap-3 rounded-full bg-red py-2 pr-2 pl-5 font-semibold text-cream hover:bg-red-deep"
                 >
                   Request a Free Estimate Visit
                   <span className="inline-flex size-9 items-center justify-center rounded-full border border-cream/50">
@@ -434,38 +448,37 @@ export function HomePage() {
                 </a>
                 <a
                   href={PHONE_TEL}
-                  className="press shine inline-flex items-center rounded-full border-2 border-red px-6 py-3 font-semibold"
+                  className="press shine inline-flex items-center justify-center rounded-full border-2 border-red px-6 py-3 text-center font-semibold"
                 >
                   Call {PHONE_DISPLAY}
                 </a>
               </div>
               <a
                 href="#reviews"
-                className="burst mt-5 inline-block text-sm text-cream/80 underline decoration-red underline-offset-4"
+                className="burst mt-5 inline-block text-sm font-semibold text-cream/80 underline decoration-red underline-offset-4"
                 style={{ animationDelay: "560ms" }}
               >
                 Read our customer reviews
               </a>
             </div>
             <figure
-              className="frame-shine burst rounded-[1.7rem] p-[3px]"
+              className="burst overflow-hidden rounded-[1.7rem] border-2 border-red bg-ink shadow-[10px_10px_0_0_var(--color-red)]"
               style={{ animationDelay: "220ms" }}
             >
-              <div className="overflow-hidden rounded-[1.45rem] bg-ink">
-                <img
-                  src="/media/team.webp"
-                  alt="The Garage Door Store Boise crew lined up with red service trucks"
-                  className="aspect-[16/11] w-full object-cover"
-                />
-                <div className="flex items-end justify-between gap-3 px-5 py-4 text-sm">
-                  <span>
-                    <span className="block font-bold tracking-wide uppercase">Real people. Local service.</span>
-                    <a href="#family" className="mt-1 inline-block text-cream/75 underline decoration-red underline-offset-4">
-                      Meet the crew behind the trucks
-                    </a>
-                  </span>
-                  <img src="/media/badge-30.webp" alt="30 years experience" className="h-14 w-14" />
-                </div>
+              <img
+                src="/media/team.webp"
+                alt="The Garage Door Store Boise crew lined up with red service trucks"
+                className="aspect-[16/11] w-full object-cover"
+              />
+              <div className="flex items-end justify-between gap-4 border-t-2 border-red px-5 py-4">
+                <span>
+                  <span className="block text-xs font-extrabold tracking-[0.16em] text-red uppercase">The crew</span>
+                  <span className="mt-1 block font-extrabold tracking-wide uppercase">Real people. Local service.</span>
+                  <a href="#family" className="mt-1 inline-block text-sm text-cream/75 underline decoration-red underline-offset-4">
+                    Meet the crew behind the trucks
+                  </a>
+                </span>
+                <img src="/media/badge-30.webp" alt="30 years experience" className="h-16 w-16" />
               </div>
             </figure>
           </div>
@@ -488,8 +501,8 @@ export function HomePage() {
         </section>
 
         <section className="bg-ink text-cream">
-          <form onSubmit={checkPlace} className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-4 gap-y-3 px-4 py-5">
-            <div className="min-w-52">
+          <form onSubmit={checkPlace} className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-5 sm:flex-row sm:flex-wrap sm:items-center">
+            <div className="sm:min-w-52">
               <p className="font-display text-xl font-extrabold text-red">Do we serve your ZIP?</p>
               <p className="text-sm text-cream/70">City or ZIP. We’ll match the Treasure Valley list.</p>
             </div>
@@ -501,9 +514,9 @@ export function HomePage() {
               value={place}
               onChange={(event) => setPlace(event.target.value)}
               placeholder="Boise or 83709"
-              className="zip-field min-w-52 flex-1 rounded-full bg-cream px-5 py-3 text-fg outline-none"
+              className="zip-field w-full rounded-full bg-cream px-5 py-3 text-fg outline-none sm:min-w-52 sm:flex-1"
             />
-            <button type="submit" className="press zip-go rounded-full bg-red px-6 py-3 font-semibold text-cream">
+            <button type="submit" className="press shine zip-go w-full rounded-full bg-red px-6 py-3 font-semibold text-cream sm:w-auto">
               Check my ZIP
             </button>
             {placeResult && (
@@ -704,13 +717,13 @@ export function HomePage() {
         <section id="help" className="bg-ink py-16 text-cream">
           <div className="mx-auto max-w-7xl px-4">
             <p className="eyebrow text-red">Services we offer</p>
-            <h2 className="display mt-3 text-5xl">The right help for your door.</h2>
+            <h2 className="display mt-3 text-4xl sm:text-5xl">The right help for your door.</h2>
             <p className="mt-3 max-w-xl text-cream/70">
               Repair, a new door, an opener, or a same-day fix. Pick the job. We quote it before any work starts.
             </p>
             <div className="help-panel mt-8 overflow-hidden rounded-[1.75rem] border-[3px] border-red bg-ink">
               <div className="grid items-stretch lg:grid-cols-[16.5rem_minmax(0,1.2fr)_minmax(0,1fr)]">
-                <div className="flex gap-3 overflow-x-auto p-4 lg:flex-col lg:justify-center lg:p-5">
+                <div className="flex gap-3 overflow-x-auto p-4 [-ms-overflow-style:none] [scrollbar-width:none] lg:flex-col lg:justify-center lg:p-5">
                   {slides.map((item, index) => (
                     <button
                       key={item.label}
@@ -737,14 +750,14 @@ export function HomePage() {
                   <p className="mt-4 max-w-md text-base leading-7 text-cream/80">{current.text}</p>
                   <button
                     type="button"
-                    className="press mt-6 inline-flex w-fit rounded-full bg-red px-5 py-3 text-sm font-bold"
+                    className="press shine mt-6 inline-flex w-fit rounded-full bg-red px-5 py-3 text-sm font-bold"
                     onClick={() => goEstimate({ service: current.service })}
                   >
                     Explore {current.label}
                   </button>
                   <a
                     href={PHONE_TEL}
-                    className="press mt-3 inline-flex w-fit rounded-full border border-cream/50 px-5 py-2.5 text-sm font-semibold"
+                    className="press shine mt-3 inline-flex w-fit rounded-full border border-cream/50 px-5 py-2.5 text-sm font-semibold"
                   >
                     Call {PHONE_DISPLAY}
                   </a>
@@ -782,7 +795,7 @@ export function HomePage() {
                 Family owned in Boise, with more than 30 years on Treasure Valley doors. People
                 still ask for Corbin, Kevin, and Jay by name.
               </p>
-              <a href="#reviews" className="press mt-6 inline-flex rounded-full bg-ink px-5 py-3 font-semibold text-cream">
+              <a href="#reviews" className="press shine mt-6 inline-flex rounded-full bg-ink px-5 py-3 font-semibold text-cream">
                 Read the reviews
               </a>
               <ul className="mt-8 grid gap-3 sm:grid-cols-3">
@@ -909,7 +922,7 @@ export function HomePage() {
               </p>
               <button
                 type="button"
-                className="press mt-4 inline-flex items-center gap-2 rounded-full bg-ink px-5 py-3 font-semibold text-cream"
+                className="press shine mt-4 inline-flex items-center gap-2 rounded-full bg-ink px-5 py-3 font-semibold text-cream"
                 onClick={() => goEstimate({ service: "New door" })}
               >
                 Request the estimate <ArrowRight className="size-4" aria-hidden />
@@ -1005,7 +1018,7 @@ export function HomePage() {
             </ul>
           </div>
 
-          <div className="mx-auto mt-6 flex w-[min(80rem,calc(100%-2rem))] flex-wrap items-center justify-between gap-4 rounded-full border-2 border-ink bg-red px-5 py-3 text-cream shadow-[8px_8px_0_0_var(--color-ink)]">
+          <div className="mx-auto mt-6 flex w-[min(80rem,calc(100%-2rem))] flex-wrap items-center justify-between gap-4 rounded-3xl border-2 border-ink bg-red px-5 py-3 text-cream shadow-[8px_8px_0_0_var(--color-ink)] sm:rounded-full">
             <p className="text-xs font-extrabold uppercase tracking-[0.18em]">Brands installed by the store</p>
             <ul className="flex flex-wrap items-center gap-2">
               {brands.map((brand) => (
@@ -1043,7 +1056,7 @@ export function HomePage() {
                 </p>
                 <button
                   type="button"
-                  className="press mt-5 rounded-full bg-cream px-5 py-3 font-semibold text-ink"
+                  className="press shine mt-5 rounded-full bg-cream px-5 py-3 font-semibold text-ink"
                   onClick={() => goEstimate({ service: "Spring replacement" })}
                 >
                   Price a spring change
@@ -1059,7 +1072,7 @@ export function HomePage() {
                 <p className="mt-3 text-muted">{coupons[0].detail} The posted full tune-up.</p>
                 <button
                   type="button"
-                  className="press mt-5 rounded-full border-2 border-ink px-5 py-3 font-semibold"
+                  className="press shine mt-5 rounded-full border-2 border-ink px-5 py-3 font-semibold"
                   onClick={() => goEstimate({ service: "Tune-up" })}
                 >
                   Claim the $125 tune-up
@@ -1075,10 +1088,10 @@ export function HomePage() {
                 </p>
               </div>
               <div className="flex gap-3 md:shrink-0">
-                <a href={PHONE_TEL} className="press rounded-full bg-ink px-5 py-3 font-semibold text-cream">
+                <a href={PHONE_TEL} className="press shine rounded-full bg-ink px-5 py-3 font-semibold text-cream">
                   Call the team
                 </a>
-                <a href={`mailto:${EMAIL}`} className="press rounded-full bg-red px-5 py-3 font-semibold text-cream">
+                <a href={`mailto:${EMAIL}`} className="press shine rounded-full bg-red px-5 py-3 font-semibold text-cream">
                   Contact the store
                 </a>
               </div>
@@ -1117,10 +1130,10 @@ export function HomePage() {
                 {sent.service} in {sent.city}. {sent.discount ? "10% off is marked on the note." : ""}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <a href={PHONE_TEL} className="press rounded-full bg-red px-5 py-3 font-semibold">
+                <a href={PHONE_TEL} className="press shine rounded-full bg-red px-5 py-3 font-semibold">
                   Call {PHONE_DISPLAY}
                 </a>
-                <a href={mailto} className="press rounded-full border border-cream/40 px-5 py-3 font-semibold">
+                <a href={mailto} className="press shine rounded-full border border-cream/40 px-5 py-3 font-semibold">
                   Email the shop
                 </a>
                 <button type="button" className="px-3 py-3 text-cream/70" onClick={() => setSent(null)}>
@@ -1199,7 +1212,7 @@ export function HomePage() {
                   {error}
                 </p>
               )}
-              <button type="submit" className="press rounded-full bg-red px-5 py-3 font-semibold text-cream">
+              <button type="submit" className="press shine rounded-full bg-red px-5 py-3 font-semibold text-cream">
                 Hold my estimate
               </button>
             </form>
@@ -1233,7 +1246,7 @@ export function HomePage() {
               {!showFaqs && (
                 <button
                   type="button"
-                  className="press mt-4 rounded-full bg-red px-4 py-2 text-sm font-semibold"
+                  className="press shine mt-4 rounded-full bg-red px-4 py-2 text-sm font-semibold"
                   onClick={() => setShowFaqs(true)}
                 >
                   Read all FAQs
@@ -1271,18 +1284,30 @@ export function HomePage() {
             </div>
           </div>
           <div className="mx-auto mt-12 max-w-7xl px-4">
-            <div className="flex flex-wrap items-end justify-between gap-4 rounded-3xl border-2 border-red bg-cream px-6 py-6 text-ink shadow-[8px_8px_0_0_var(--color-red)]">
-            <h2 className="display max-w-xl text-4xl text-ink md:text-5xl">
-              Let’s get your garage door back to normal.
-            </h2>
-            <div className="flex gap-3">
-              <a href={PHONE_TEL} className="press rounded-full border-2 border-ink px-5 py-3 font-semibold">
-                Call now
-              </a>
-              <a href="#estimate" className="press inline-flex items-center gap-2 rounded-full bg-red px-5 py-3 font-semibold text-cream">
-                Request a free estimate visit <ArrowRight className="size-4" aria-hidden />
-              </a>
-            </div>
+            <div className="overflow-hidden rounded-[2rem] border-2 border-ink bg-cream text-ink shadow-[10px_10px_0_0_var(--color-red)]">
+              <div className="grid items-center gap-6 p-6 md:grid-cols-[1.25fr_0.75fr] md:p-8">
+                <div>
+                  <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-red">The visit is free</p>
+                  <h2 className="display mt-3 text-4xl leading-[0.92] md:text-6xl">
+                    Let’s get your garage door back to normal.
+                  </h2>
+                  <p className="mt-4 max-w-md text-lg text-muted">
+                    A technician answers 24/7. You hear the price before any work starts.
+                  </p>
+                </div>
+                <div className="rounded-3xl bg-red p-5 text-cream shadow-[6px_6px_0_0_var(--color-ink)]">
+                  <p className="text-xs font-extrabold uppercase tracking-[0.18em]">Call the store</p>
+                  <a href={PHONE_TEL} className="display mt-2 block text-3xl leading-none sm:text-4xl">
+                    {PHONE_DISPLAY}
+                  </a>
+                  <a
+                    href="#estimate"
+                    className="press shine mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-ink px-5 py-3 font-semibold text-cream"
+                  >
+                    Request a free estimate visit <ArrowRight className="size-4" aria-hidden />
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -1290,22 +1315,23 @@ export function HomePage() {
 
       <footer className="mill-grid-dark bg-ink pb-24 text-cream md:pb-10">
         <div className="mill-stripe is-bar" aria-hidden />
-        <div className="mx-auto max-w-7xl px-4 py-10">
+        <div className="mx-auto max-w-7xl px-4 py-12">
           <div className="flex flex-wrap items-end justify-between gap-6 border-b border-cream/15 pb-8">
-            <div className="max-w-sm">
-              <img src="/media/logo.png" alt="Garage Door Store Boise" className="h-14 w-auto" />
-              <p className="mt-3 text-sm text-cream/70">
+            <div className="min-w-0">
+              <img src="/media/logo.png" alt="Garage Door Store Boise" className="h-20 w-auto" />
+              <p className="mt-4 text-base text-cream/80 md:whitespace-nowrap md:text-lg">
                 Local crews, upfront pricing, and the exact cost before any work starts.
               </p>
             </div>
-            <a href={PHONE_TEL} className="press rounded-full bg-red px-5 py-3 text-sm font-extrabold">
+            <a href={PHONE_TEL} className="press shine inline-flex items-center gap-3 rounded-full bg-red px-6 py-4 text-xl font-extrabold">
+              <Phone className="size-6" aria-hidden />
               {PHONE_DISPLAY}
             </a>
           </div>
-          <div className="mt-8 grid gap-8 md:grid-cols-3">
+          <div className="mt-10 grid gap-10 md:grid-cols-3">
             <div className="accent-bar">
-              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-red">Priority services</p>
-              <ul className="mt-4 space-y-2 text-sm font-semibold">
+              <p className="text-sm font-extrabold uppercase tracking-[0.18em] text-red">Priority services</p>
+              <ul className="mt-5 space-y-3 text-lg font-semibold">
                 {slides.map((item) => (
                   <li key={item.label}>
                     <button type="button" className="hover:text-red" onClick={() => goEstimate({ service: item.service })}>
@@ -1316,8 +1342,8 @@ export function HomePage() {
               </ul>
             </div>
             <div className="accent-bar">
-              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-red">Service area</p>
-              <ul className="mt-4 grid grid-cols-2 gap-y-2 text-sm font-semibold">
+              <p className="text-sm font-extrabold uppercase tracking-[0.18em] text-red">Service area</p>
+              <ul className="mt-5 grid grid-cols-2 gap-y-3 text-lg font-semibold">
                 {cities.map((city) => (
                   <li key={city}>
                     <a href="#areas" className="hover:text-red" onClick={() => setMapCity(city)}>
@@ -1328,8 +1354,8 @@ export function HomePage() {
               </ul>
             </div>
             <div className="accent-bar">
-              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-red">Help & company</p>
-              <ul className="mt-4 space-y-2 text-sm font-semibold">
+              <p className="text-sm font-extrabold uppercase tracking-[0.18em] text-red">Help & company</p>
+              <ul className="mt-5 space-y-3 text-lg font-semibold">
                 <li><a href="#family" className="hover:text-red">Why Boise</a></li>
                 <li><a href="#reviews" className="hover:text-red">Reviews</a></li>
                 <li><a href="#doors" className="hover:text-red">Garage doors</a></li>
@@ -1340,13 +1366,16 @@ export function HomePage() {
               </ul>
             </div>
           </div>
-          <div className="mt-8 flex flex-wrap items-center justify-between gap-3 rounded-full border-2 border-cream/20 px-5 py-3 text-sm">
-            <span>{ADDRESS}</span>
-            <a href={`mailto:${EMAIL}`} className="inline-flex items-center gap-2 font-semibold">
-              <Mail className="size-4 text-red" aria-hidden /> {EMAIL}
+          <div className="mt-10 flex flex-col gap-4 rounded-3xl border-2 border-cream/20 px-5 py-4 text-base sm:flex-row sm:items-center sm:justify-between sm:rounded-full sm:text-lg">
+            <span className="inline-flex items-center gap-3">
+              <MapPin className="size-6 shrink-0 text-red" aria-hidden />
+              {ADDRESS}
+            </span>
+            <a href={`mailto:${EMAIL}`} className="inline-flex items-center gap-3 font-semibold">
+              <Mail className="size-6 text-red" aria-hidden /> {EMAIL}
             </a>
           </div>
-          <p className="mt-6 text-center text-xs uppercase tracking-[0.14em] text-cream/50">
+          <p className="mt-8 text-center text-sm uppercase tracking-[0.14em] text-cream/60">
             © {new Date().getFullYear()} Garage Door Store Boise. Prices are the shop’s posted specials.
           </p>
         </div>
@@ -1372,14 +1401,14 @@ export function HomePage() {
               ))}
             </div>
             <p className="mt-3 text-sm">{asks[askId].a}</p>
-            <a href={PHONE_TEL} className="press mt-4 inline-flex items-center gap-2 rounded-full bg-red px-4 py-2 text-sm font-semibold text-cream">
+            <a href={PHONE_TEL} className="press shine mt-4 inline-flex items-center gap-2 rounded-full bg-red px-4 py-2 text-sm font-semibold text-cream">
               <Phone className="size-4" aria-hidden /> Call {PHONE_DISPLAY}
             </a>
           </div>
         )}
         <button
           type="button"
-          className="ask-fab press ml-auto flex size-14 items-center justify-center rounded-full bg-red text-cream"
+          className="ask-fab press shine ml-auto flex size-14 items-center justify-center rounded-full bg-red text-cream"
           aria-expanded={askOpen}
           aria-label={askOpen ? "Close questions" : "Ask a question"}
           onClick={() => setAskOpen((open) => !open)}
