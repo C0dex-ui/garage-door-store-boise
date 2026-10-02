@@ -1,16 +1,19 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useLayoutEffect, useMemo, useState, type FormEvent } from "react";
 import {
   ArrowRight,
   Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  CircleCheck,
   Mail,
   MapPin,
   Menu,
+  MessageCircleQuestion,
   Phone,
   Plus,
   Star,
+  UserRound,
   X,
 } from "lucide-react";
 import {
@@ -77,6 +80,25 @@ function lookupPlace(raw: string): { status: "yes" | "maybe" | "empty"; city?: s
   };
 }
 
+const asks = [
+  {
+    q: "My ZIP?",
+    a: "We cover Boise, Meridian, Eagle, Nampa, and the rest of the Treasure Valley list.",
+  },
+  {
+    q: "Spring price?",
+    a: "Dual spring changes are $350 with tax, labor, and a 10-year warranty.",
+  },
+  {
+    q: "How soon?",
+    a: "We quote a set price on the phone and book the visit. Same-day when the schedule allows.",
+  },
+  {
+    q: "Before you arrive?",
+    a: "You get a text with a photo of who’s coming. Nothing starts until you say yes.",
+  },
+];
+
 export function HomePage() {
   const [menu, setMenu] = useState(false);
   const [areaOpen, setAreaOpen] = useState(false);
@@ -94,6 +116,8 @@ export function HomePage() {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [error, setError] = useState("");
   const [sent, setSent] = useState<FormState | null>(null);
+  const [askOpen, setAskOpen] = useState(false);
+  const [askId, setAskId] = useState(0);
 
   const filtered = useMemo(
     () => (doorFilter === "All" ? [...doors] : doors.filter((door) => door.style === doorFilter)),
@@ -141,6 +165,32 @@ export function HomePage() {
         `Name: ${sent.name}\nPhone: ${sent.phone}\nCity: ${sent.city}\nNeed: ${sent.service}\n10% off: ${sent.discount ? "yes" : "no"}\nNotes: ${sent.notes || "—"}`,
       )}`
     : `mailto:${EMAIL}`;
+
+  useLayoutEffect(() => {
+    const nodes = document.querySelectorAll("main > section:not(:first-child), footer");
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    nodes.forEach((node) => {
+      node.classList.add("reveal");
+      if (reduce || node.getBoundingClientRect().top < window.innerHeight * 0.9) {
+        node.classList.add("is-in");
+      }
+    });
+    if (reduce) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-in");
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+    );
+    nodes.forEach((node) => {
+      if (!node.classList.contains("is-in")) observer.observe(node);
+    });
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div className="bg-paper text-fg">
@@ -329,10 +379,12 @@ export function HomePage() {
         </section>
 
         <section className="border-b border-line bg-cream">
-          <ul className="mx-auto grid max-w-7xl gap-4 px-4 py-5 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="mx-auto grid max-w-7xl gap-5 px-4 py-6 sm:grid-cols-2 lg:grid-cols-4">
             {trust.map((item) => (
-              <li key={item.title} className="flex gap-3">
-                <Check className="mt-1 size-4 shrink-0 text-red" aria-hidden />
+              <li key={item.title} className="flex items-start gap-3">
+                <span className="peri mt-0.5">
+                  <Check className="size-3.5" strokeWidth={3} aria-hidden />
+                </span>
                 <span>
                   <span className="block font-semibold">{item.title}</span>
                   <span className="text-sm text-muted">{item.text}</span>
@@ -343,9 +395,11 @@ export function HomePage() {
         </section>
 
         <section className="bg-ink text-cream">
-          <form onSubmit={checkPlace} className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 py-4">
-            <p className="font-display text-xl font-extrabold text-red">Do we serve your ZIP?</p>
-            <p className="text-sm text-cream/70">City or ZIP. We’ll match the Treasure Valley list.</p>
+          <form onSubmit={checkPlace} className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-4 gap-y-3 px-4 py-5">
+            <div className="min-w-52">
+              <p className="font-display text-xl font-extrabold text-red">Do we serve your ZIP?</p>
+              <p className="text-sm text-cream/70">City or ZIP. We’ll match the Treasure Valley list.</p>
+            </div>
             <label className="sr-only" htmlFor="place">
               City or ZIP
             </label>
@@ -354,9 +408,9 @@ export function HomePage() {
               value={place}
               onChange={(event) => setPlace(event.target.value)}
               placeholder="Boise or 83709"
-              className="min-w-48 flex-1 rounded-full bg-cream px-4 py-2 text-fg outline-none focus:ring-2 focus:ring-red"
+              className="zip-field min-w-52 flex-1 rounded-full bg-cream px-5 py-3 text-fg outline-none"
             />
-            <button type="submit" className="press rounded-full bg-red px-5 py-2 font-semibold text-cream">
+            <button type="submit" className="press zip-go rounded-full bg-red px-6 py-3 font-semibold text-cream">
               Check my ZIP
             </button>
             {placeResult && (
@@ -372,90 +426,173 @@ export function HomePage() {
           </form>
         </section>
 
-        <section className="mx-auto grid max-w-7xl gap-8 px-4 py-14 md:grid-cols-12">
-          <div className="md:col-span-4">
-            <p className="eyebrow text-red">Start with the symptom</p>
-            <h2 className="display mt-3 text-4xl">What is your door doing?</h2>
-            <p className="mt-3 text-muted">
-              Choose what you notice. We’ll set the estimate to the right job, and a technician
-              confirms the cause in person.
-            </p>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2 md:col-span-8">
-            {symptoms.map((item) => {
-              const active = symptom === item.label;
-              return (
-                <button
-                  key={item.n}
-                  type="button"
-                  aria-pressed={active}
-                  className={`press flex items-center justify-between rounded-2xl border px-4 py-3 text-left ${
-                    active ? "border-red bg-cream" : "border-line bg-cream"
-                  }`}
-                  onClick={() => {
-                    setSymptom(item.label);
-                    goEstimate({ service: item.service, notes: item.label });
-                  }}
-                >
-                  <span>
-                    <span className="text-xs font-semibold text-red">{item.n}</span>{" "}
-                    <span className="font-semibold">{item.label}</span>
-                  </span>
-                  <Plus className="size-4 text-red" aria-hidden />
-                </button>
-              );
-            })}
+        <section className="bg-paper">
+          <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-14 md:grid-cols-12">
+            <div className="md:col-span-4">
+              <p className="eyebrow text-red">Start with the symptom</p>
+              <h2 className="display mt-3 text-4xl md:text-5xl">What is your door doing?</h2>
+              <p className="mt-3 max-w-sm text-muted">
+                Choose what you notice. We’ll set the estimate to the right job, and a technician
+                confirms the cause in person.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 md:col-span-8">
+              {symptoms.map((item) => {
+                const active = symptom === item.label;
+                return (
+                  <button
+                    key={item.n}
+                    type="button"
+                    aria-pressed={active}
+                    className={`play-card press flex items-center justify-between gap-3 rounded-2xl px-4 py-3.5 text-left ${
+                      active ? "is-on" : ""
+                    }`}
+                    onClick={() => {
+                      setSymptom(item.label);
+                      goEstimate({ service: item.service, notes: item.label });
+                    }}
+                  >
+                    <span>
+                      <span className="mr-2 text-sm font-extrabold text-red">{item.n}</span>
+                      <span className="font-semibold">{item.label}</span>
+                    </span>
+                    <span className="peri">
+                      <Plus className="size-3.5" strokeWidth={3} aria-hidden />
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </section>
 
-        <section className="siding border-y border-line py-16">
-          <div className="mx-auto max-w-7xl px-4">
-            <p className="eyebrow text-red">What to expect when you call</p>
-            <h2 className="display mt-3 text-5xl">Here is how it goes.</h2>
-            <div className="mt-10 grid items-center gap-6 md:grid-cols-2">
+        <section className="play-bay relative overflow-hidden border-y border-line py-14">
+          <div className="play-dot" aria-hidden />
+          <div className="relative z-10 mx-auto max-w-7xl px-4">
+            <div className="max-w-lg">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-red">
+                What to expect when you call
+              </p>
+              <h2 className="display mt-3 text-4xl leading-[1.05] md:text-5xl">Here is how it goes.</h2>
+              <p className="mt-4 text-base leading-7 text-muted">
+                A set price on the phone, a text when your tech is on the way, and nothing starts
+                until you say yes.
+              </p>
+            </div>
+            <div className="mt-8 grid items-center gap-5 md:grid-cols-2">
               <article className="offset-card rounded-3xl bg-cream p-6">
-                <p className="text-sm font-semibold">Tell us what happened</p>
-                <p className="display mt-2 text-4xl text-red">01</p>
-                <p className="mt-2 text-muted">
+                <div className="flex items-center gap-3">
+                  <span className="peri">
+                    <Phone className="size-4" strokeWidth={2.5} aria-hidden />
+                  </span>
+                  <div>
+                    <p className="text-xs font-extrabold tracking-wide text-red">01</p>
+                    <p className="font-display text-xl font-extrabold leading-tight">Tell us what happened</p>
+                  </div>
+                </div>
+                <p className="mt-3 text-muted">
                   Call {PHONE_DISPLAY} or send the estimate. We quote a set price on the phone — no
                   add-ons — and book the visit.
                 </p>
               </article>
               <img
-                src="/media/g4.webp"
-                alt="Matched carriage garage doors on a Treasure Valley home"
-                className="h-72 w-full rounded-3xl object-cover"
+                className="step-crew"
+                src="/media/step-crew-cartoon.png"
+                alt="Garage Door Store technicians, one holding a spring"
               />
             </div>
-            <div className="mt-8 grid items-center gap-6 md:grid-cols-2">
+            <div className="elbow" aria-hidden>
+              <svg viewBox="0 0 800 64" className="hidden h-16 w-full md:block">
+                <path d="M210 4 V28 H590 V60" markerEnd="url(#elbow-a)" />
+                <defs>
+                  <marker id="elbow-a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <path d="M0 0 L8 4 L0 8 Z" />
+                  </marker>
+                </defs>
+              </svg>
+              <svg viewBox="0 0 24 40" className="mx-auto h-10 w-6 md:hidden">
+                <path d="M12 2 V36" markerEnd="url(#elbow-a-sm)" />
+                <defs>
+                  <marker id="elbow-a-sm" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <path d="M0 0 L8 4 L0 8 Z" />
+                  </marker>
+                </defs>
+              </svg>
+            </div>
+            <div className="grid items-center gap-5 md:grid-cols-2">
               <img
-                src="/media/wood-house.webp"
-                alt="Wood-look double garage doors installed on a Boise home"
-                className="h-72 w-full rounded-3xl object-cover"
+                className="step-visual md:order-1"
+                src="/media/team.webp"
+                alt="Garage Door Store Boise crew with their red service trucks"
               />
-              <article className="offset-card rounded-3xl bg-cream p-6">
-                <p className="text-sm font-semibold">Meet your tech</p>
-                <p className="display mt-2 text-4xl text-red">02</p>
-                <p className="mt-2 text-muted">
+              <article className="offset-card rounded-3xl bg-cream p-6 md:order-2">
+                <div className="flex items-center gap-3">
+                  <span className="peri">
+                    <UserRound className="size-4" strokeWidth={2.5} aria-hidden />
+                  </span>
+                  <div>
+                    <p className="text-xs font-extrabold tracking-wide text-red">02</p>
+                    <p className="font-display text-xl font-extrabold leading-tight">Meet your tech</p>
+                  </div>
+                </div>
+                <p className="mt-3 text-muted">
                   You get a text when the technician is on the way, with a photo of who’s coming.
                   They assess the door, explain the options, and wait for your yes.
                 </p>
               </article>
             </div>
-            <div className="mt-8 grid items-center gap-6 md:grid-cols-2">
+            <div className="elbow is-back" aria-hidden>
+              <svg viewBox="0 0 800 64" className="hidden h-16 w-full md:block">
+                <path d="M590 4 V28 H210 V60" markerEnd="url(#elbow-b)" />
+                <defs>
+                  <marker id="elbow-b" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <path d="M0 0 L8 4 L0 8 Z" />
+                  </marker>
+                </defs>
+              </svg>
+              <svg viewBox="0 0 24 40" className="mx-auto h-10 w-6 md:hidden">
+                <path d="M12 2 V36" markerEnd="url(#elbow-b-sm)" />
+                <defs>
+                  <marker id="elbow-b-sm" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <path d="M0 0 L8 4 L0 8 Z" />
+                  </marker>
+                </defs>
+              </svg>
+            </div>
+            <div className="grid items-center gap-5 md:grid-cols-2">
               <article className="offset-card rounded-3xl bg-cream p-6">
-                <p className="text-sm font-semibold">Check it together</p>
-                <p className="display mt-2 text-4xl text-red">03</p>
-                <p className="mt-2 text-muted">
+                <div className="flex items-center gap-3">
+                  <span className="peri">
+                    <CircleCheck className="size-4" strokeWidth={2.5} aria-hidden />
+                  </span>
+                  <div>
+                    <p className="text-xs font-extrabold tracking-wide text-red">03</p>
+                    <p className="font-display text-xl font-extrabold leading-tight">Check it together</p>
+                  </div>
+                </div>
+                <p className="mt-3 text-muted">
                   We fix it, test the safety eyes, run the door, and walk you through the result.
                   Dual spring changes include a 10-year warranty.
                 </p>
               </article>
-              <img
-                src="/media/g7.webp"
-                alt="Three modern wood plank garage doors"
-                className="h-72 w-full rounded-3xl object-cover"
-              />
+              <div className="roll-scene" aria-hidden>
+                <div className="roll-frame">
+                  <div className="roll-panes">
+                    {Array.from({ length: 12 }, (_, index) => (
+                      <span key={index} />
+                    ))}
+                  </div>
+                </div>
+                <div className="roll-stripe" />
+                <div className="roll-rig">
+                  <div className="roll-smoke" aria-hidden>
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                  <img className="roll-truck" src="/media/truck.png" alt="" />
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -1048,6 +1185,42 @@ export function HomePage() {
           © {new Date().getFullYear()} Garage Door Store Boise. Prices are the shop’s posted specials.
         </p>
       </footer>
+
+      <div className="fixed right-4 bottom-20 z-50 flex flex-col items-end md:bottom-6">
+        {askOpen && (
+          <div className="mb-3 w-80 max-w-[calc(100vw-2rem)] rounded-3xl border border-line bg-cream p-4 text-fg shadow-[0_18px_40px_-18px_rgb(0_0_0/0.45)]">
+            <p className="font-display text-lg font-extrabold">Ask us</p>
+            <p className="mt-1 text-sm text-muted">Quick answers. A person still calls you back.</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {asks.map((item, index) => (
+                <button
+                  key={item.q}
+                  type="button"
+                  className={`press rounded-full border px-3 py-1 text-left text-xs font-semibold ${
+                    askId === index ? "border-red bg-red text-cream" : "border-line"
+                  }`}
+                  onClick={() => setAskId(index)}
+                >
+                  {item.q}
+                </button>
+              ))}
+            </div>
+            <p className="mt-3 text-sm">{asks[askId].a}</p>
+            <a href={PHONE_TEL} className="press mt-4 inline-flex items-center gap-2 rounded-full bg-red px-4 py-2 text-sm font-semibold text-cream">
+              <Phone className="size-4" aria-hidden /> Call {PHONE_DISPLAY}
+            </a>
+          </div>
+        )}
+        <button
+          type="button"
+          className="ask-fab press ml-auto flex size-14 items-center justify-center rounded-full bg-red text-cream"
+          aria-expanded={askOpen}
+          aria-label={askOpen ? "Close questions" : "Ask a question"}
+          onClick={() => setAskOpen((open) => !open)}
+        >
+          {askOpen ? <X aria-hidden /> : <MessageCircleQuestion aria-hidden />}
+        </button>
+      </div>
 
       <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 border-t border-line-dark bg-ink md:hidden">
         <a href={PHONE_TEL} className="inline-flex items-center justify-center gap-2 py-3 font-semibold">
